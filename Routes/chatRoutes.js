@@ -24,10 +24,10 @@ router.route('/addimage').post(upload.single("img"),(req,res)=>{
     }
 })
 
-router.route('/').post(authController.protect,chatController.accesChat)
-router.route('/').get(authController.protect,chatController.allChats)
-router.route('/allChats').delete(authController.protect,chatController.deleteAllChats)
-router.route('/').delete(authController.protect,chatController.deleteChat)
+router.route('/GetOneChat').post(authController.protect,chatController.accesChat)
+router.route('/GetAllChats').get(authController.protect,chatController.allChats)
+router.route('/deleteAllChats').delete(authController.protect,chatController.deleteAllChats)
+router.route('/deleteChat').delete(authController.protect,chatController.deleteChat)
 
 router.route('/group').post(authController.protect,chatController.createGroupChat)
 router.route('/rename').put(authController.protect,chatController.renameGroup) 

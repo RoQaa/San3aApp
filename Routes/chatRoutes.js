@@ -24,8 +24,8 @@ router.route('/addimage').post(upload.single("img"),(req,res)=>{
     }
 })
 
-router.route('/GetOneChat').post(authController.protect,chatController.accesChat)
-router.route('/GetAllChats').get(authController.protect,chatController.allChats)
+router.route('/detOneChat').post(authController.protect,chatController.accesChat)
+router.route('/detAllChats').get(authController.protect,chatController.allChats)
 router.route('/deleteAllChats').delete(authController.protect,chatController.deleteAllChats)
 router.route('/deleteChat').delete(authController.protect,chatController.deleteChat)
 

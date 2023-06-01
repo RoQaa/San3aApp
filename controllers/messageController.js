@@ -42,7 +42,7 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
 })
 exports.allMessages = catchAsync(async(req, res, next)=>{
  
-    const messages = await Message.find({ chat: req.params.chatId} , null,{ sort :{timestamp: 1 }})                              
+    const messages = await Message.find({ chat: req.body.chatId} , null,{ sort :{timestamp: 1 }})                              
                           .populate("sender", "name pic email")
 
     if(!messages){

@@ -13,25 +13,19 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
     }
 
     var isChat = await Chat.find({to: reciver.id})
- 
+    
     if(isChat.length > 0){
-      //const messages = await Message.find({ chat: isChat._id } , null,{ sort :{timestamp: 1 }})
-      const messages = await Message.find({ chat: isChat._id }).sort('-createdAt')
-      console.log(messages)
       
-      // Get the current date and time
-      const currentDate = new Date();
-      const formattedDate = currentDate.toISOString().slice(0, 10);
-      const formattedTime = currentDate.toLocaleTimeString();
+      const idString = isChat[0]._id.toString();
+      const messages = await Message.find({ chat: idString })
 
-      console.log(`Current date: ${formattedDate}\nCurrent time: ${formattedTime}`)
-      
-        res.status(200).json({
-            status: true,
-            message:"Access successfully",
-            chatID: isChat.id,
-            data: messages
-        }); 
+      res.status(200).json({
+          status: true,
+          message:"Access successfully",
+          chatID: isChat.id,
+          data: messages
+      }); 
+
     }else{
         var chat = {
             to:reciver.id,
@@ -39,11 +33,7 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
         }
         try{
             const newChat = await Chat.create(chat);
-           // const fullChat = await Chat.findById(newChat._id)
-                  // .populate({
-                  //   path:'to',
-                  //   select:'name photo'
-                  // })
+            
             res.status(200).json({
                 status: true,
                 message:"chat creatad successfully",

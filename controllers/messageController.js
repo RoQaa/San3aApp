@@ -11,6 +11,23 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
     return next(new AppError("Invalid data passed into request"))
   }  
 
+  const now = new Date();
+  const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });           
+  console.log(`The Message was sent at ${sendingtime}.`)
+
+  let count = 0;
+
+  const interval = setInterval(() => {
+
+    count++;
+    console.log('textMessage', `This is text message sent from ${count} minute.`)
+
+    if (count >= 2) {
+      clearInterval(interval);
+      console.log('textMessage', `The textMessage was sent at ${sendingtime}.`);
+    }
+  }, 60000); // send message every 60 seconds
+
   var newMessage = {
     sender: req.user._id,
     content: content,

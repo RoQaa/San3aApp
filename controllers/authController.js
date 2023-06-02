@@ -43,7 +43,7 @@ user.password=undefined;
 res.status(statusCode).json({
     status:true,
     message,
-    data:user,
+   // data:user,
     token
       
     

@@ -41,7 +41,7 @@ postSchema.pre(/^find/,function(next){//populting by ref
         {
             path:'user',
            
-             select:'name role photo  '
+             select:'name photo  '
         }
     ).select('-Activity');
     next();

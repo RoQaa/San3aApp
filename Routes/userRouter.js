@@ -12,8 +12,8 @@ router.post('/verifyEmailOtp',authController.verifyEmailOtp);
 router.post('/verifyPhoneOtp',authController.verifyPhoneOtp);
 router.post('/logout',authController.protect,authController.logOut);
 router.post('/resetpassword',authController.protect,authController.resetPassword);
-router.patch('/updatePassword',authController.protect,authController.updatePassword);
-router.patch('/updateUser',authController.protect,UpdatedUser);
+router.post('/updatePassword',authController.protect,authController.updatePassword);
+router.post('/updateUser',authController.protect,UpdatedUser);
 router.delete('/DeleteMe',authController.protect,deletedMe);
 router.post('/rate',AddWorkerUserRate);
 

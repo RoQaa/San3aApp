@@ -37,9 +37,11 @@ exports.addPost = catchAsync(async (req, res, next) => {
 exports.getPosts = catchAsync(async (req, res, next) => {
   //protect handler
   const data = req.user;
-
+ if(!req.body.job){
   const allPosts = await Post.find({ user: { $ne: data._id } });
-
+  if(!allPosts){
+    return next(new AppError("there's n post to get",404));
+  }
   const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
 
   if (!filteredPosts) {
@@ -50,6 +52,24 @@ exports.getPosts = catchAsync(async (req, res, next) => {
     status: true,
     data: filteredPosts,
   });
+ }
+ if(req.body.job){
+  const allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job});
+  if(!allPosts){
+    return next(new AppError("there's n post to get",404));
+  }
+  const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+
+  if (!filteredPosts) {
+    return next(new AppError("there's no posts to Get ", 404));
+  }
+  res.status(200).json({
+    length: filteredPosts.length,
+    status: true,
+    data: filteredPosts,
+  });
+ }
+ 
 });
 
 exports.deletePost = catchAsync(async (req, res, next) => {

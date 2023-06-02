@@ -39,17 +39,42 @@ exports.getPosts=catchAsync(async (req,res,next) => {
   //protect handler
   const data=req.user;
   
-   const allPosts=  await Post.find({user:{$ne:data._id}});
-   //const allPosts=  await Post.lookup({ from: 'User', localField: 'user', foreignField: '_id', as: 'users' });
+  const allPosts=  await Post.find({user:{$ne:data._id}});
  
+  const filteredPosts = allPosts.filter(post => post.user.role !== 'worker');
+    // const allPosts =await Post.aggregate([{
+    //  $lookup:{
+    //    from:"User",
+    //    localField:"user",
+    //    foreignField:"_id",
+    //    as:"role"
+    //  },
+     
+    // }]).exec();
+
+  //  const posts = await Post.aggregate([
+  //   {
+  //     $lookup: {
+  //       from: "users",
+  //       localField: "author",
+  //       foreignField: "_id",
+  //       as: "authorInfo"
+  //     }
+  //   },
+  //   {
+  //     $match: {
+  //       "authorInfo.role": { $ne: "admin" }
+  //     }
+  //   }
+  // ]).exec();
    
-    if(!allPosts){
+    if(!filteredPosts){
         return next(new AppError("there's no posts to Get ",404))
     }
     res.status(200).json({
-      length:allPosts.length,
+      length:filteredPosts.length,
         status:true,
-        data:allPosts
+        data:filteredPosts
     })
   
 })

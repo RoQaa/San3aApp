@@ -87,7 +87,7 @@ if(req.body.job){
 
 
 exports.deletedMe=catchAsync(async (req,res,next) => {
-  
+  //protect handler
   await User.findByIdAndUpdate(req.user.id,{active:false},{
     new:true,
     runValidators:true

@@ -29,6 +29,7 @@ postSchema.virtual('Date').get(function(){
    date=date.toString();
   return date.substring(4,15);
 }); 
+
 postSchema.virtual('Time').get(function(){
     let date=this._id.getTimestamp();
     date=date.toString();

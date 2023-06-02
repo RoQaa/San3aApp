@@ -43,7 +43,8 @@ user.password=undefined;
 res.status(statusCode).json({
     status:true,
     message,
-    data:user,
+    data:{name:user.name,
+    photo:user.photo},
     token
       
     
@@ -382,7 +383,7 @@ exports.updatePassword=catchAsync(async(req,res,next)=>{ //settings  hy48lha b3d
    
         await user.save({validateBeforeSave:false})
   // 4) Log user in, send JWT
-  createSendToken(user, 200,"password has changed successfully", res);
+  createSendToken(user, 200,"password has changed successfully, please log in again", res);
 
 })
 

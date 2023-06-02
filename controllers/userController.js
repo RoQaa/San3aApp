@@ -43,13 +43,7 @@ const users= await User.find({role:"customer"});
 })
 exports.getAllWorkers=catchAsync(async(req,res,next) => {
   if(!req.body.job){
-  const users=await User.aggregate([
-    {
-      $match:{
-        role:"worker"
-      }
-    }
-  ])
+  const users=await User.findOne({role:'worker'}).select('name photo rateAverage bio')
  
   res.status(200).json({
     length:users.length,
@@ -59,14 +53,7 @@ exports.getAllWorkers=catchAsync(async(req,res,next) => {
  
 }
 if(req.body.job){
-  const users=await User.aggregate([
-    {
-      $match:{
-        role:"worker",
-        job:req.body.job
-      }
-    }
-  ])
+  const users=await User.findOne({job:req.body.job}).select('name photo rateAverage bio')
  
   res.status(200).json({
     length:users.length,
@@ -100,7 +87,7 @@ if(req.body.job){
 
 
 exports.deletedMe=catchAsync(async (req,res,next) => {
-  
+  //protect handler
   await User.findByIdAndUpdate(req.user.id,{active:false},{
     new:true,
     runValidators:true

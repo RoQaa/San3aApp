@@ -150,7 +150,7 @@ userSchema.plugin(mongooseIntlPhoneNumber, {
 // })
 //Query Middle Wares
 userSchema.pre(/^find/,  function(next){
-     this.find({active:{$ne:false}}).select('-createdAt');
+     this.find({active:{$ne:false}}).select('-createdAt -rating');
     next();
 })
 

@@ -39,7 +39,8 @@ exports.getPosts=catchAsync(async (req,res,next) => {
   //protect handler
   const data=req.user;
   
-   const allPosts=  await Post.find({user:{$ne:data._id}});
+   //const allPosts=  await Post.find({user:{$ne:data._id}});
+   const allPosts=  await Post.lookup({ from: 'User', localField: 'user', foreignField: '_id', as: 'users' });
  
    
     if(!allPosts){
@@ -54,15 +55,15 @@ exports.getPosts=catchAsync(async (req,res,next) => {
 })
 
 exports.deletePost=catchAsync(async(req,res,next)=>{
-    const deletePost=await Post.findByIdAndDelete(req.params.id);
-    console.log(req.params.id);
+    const deletePost=await Post.findByIdAndDelete(req.body.id);
+    
     if (!deletePost) {
         return next(new AppError('No post found with that ID', 404));
       }
-    res.status(204).json({
+    res.status(200).json({
         status:true,
         message:"Deleted sucessfully",
-        data:null
+        
     })
 })
 

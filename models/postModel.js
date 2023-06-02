@@ -39,6 +39,7 @@ postSchema.pre(/^find/,function(next){//populting by ref
     this.find({Activity:{$ne:false}}).populate(
         {
             path:'user',
+            match:{role:'customer'},
              select:'name photo'
         }
     ).select('-Activity');
@@ -51,3 +52,5 @@ postSchema.pre(/^find/,function(next){//populting by ref
 const Post=mongoose.model('Post',postSchema);
 
 module.exports=Post;
+
+

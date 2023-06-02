@@ -67,7 +67,7 @@ exports.allChats = catchAsync(async(req, res, next)=>{
                           })
                           .populate({
                             path:'latestMessage',
-                            select:'content date time'
+                            select:'content text date time'
                           })
 
     if(!chats){

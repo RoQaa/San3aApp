@@ -54,8 +54,8 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
 exports.allChats = catchAsync(async(req, res, next)=>{
   
     var chats = await Chat.find({ $and: [{ latestMessage: { $ne: null}},{ $or: [{ to: req.user.id }, {from: req.user.id }]}]})
-                          .sort({ time: 1 })
-                          .sort({ date: 1 }) 
+                          .sort({ time: -1 })
+                          .sort({ date: -1 }) 
                           .select("-date -time")
                           .populate({
                             path:'to',

@@ -3,8 +3,8 @@ const authController = require('../controllers/authController');
 const express = require('express')
 const router = express.Router()
 
-router.route('/').post(authController.protect,messageController.sendMessage)
-router.route('/:chatId').get(authController.protect,messageController.allMessages)
+router.route('/sendMessage').post(authController.protect,messageController.sendMessage)
+router.route('/getAllMessages').get(authController.protect,messageController.allMessages)
 
 
 module.exports = router

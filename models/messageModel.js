@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// can push??
+
 const message = mongoose.Schema(
   {
     sender: {
@@ -13,13 +13,14 @@ const message = mongoose.Schema(
     chat: { type: mongoose.Schema.Types.ObjectId,
         ref: "Chat" 
     },
-    readBy: [{ 
+    readBy: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 
-    }],
+    },
   },
   { timestamps: true }
 );
 
 const Message = mongoose.model("Message", message);
+
 module.exports = Message;

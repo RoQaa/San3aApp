@@ -7,8 +7,6 @@ const {catchAsync} = require('../utils/catchAsync')
 
 exports.sendMessage = catchAsync(async(req, res, next)=>{
 
-  
-
   if(!req.body.chatId){
     return next(new AppError("Invalid data passed into request"))
   }

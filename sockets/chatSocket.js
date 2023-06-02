@@ -31,7 +31,25 @@ module.exports = io => {
       // Send the message to all sockets in the room
       console.log(message.chat)
       io.to(message.chat).emit('chat message', message.content);
-    });
+      
+      const now = new Date();
+      const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });           
+      console.log(`The Message was sent at ${sendingtime}.`)
+
+      let count = 0;
+      const interval = setInterval(() => {
+
+        count++;
+        socket.emit('timeMessage', `This is text message sent from ${count} minute.`);
+        //console.log('textMessage', `This is text message sent from ${count} minute.`)
+      
+        if (count >= 2) {
+          clearInterval(interval);
+          socket.emit('timeMessage', `The textMessage was sent at ${sendingtime}.`);
+          //console.log('textMessage', `The textMessage was sent at ${sendingtime}.`);
+        }
+      }, 60000); // send message every 60 seconds
+  });
     
     // //Leave a chat room
     // socket.on('leave', (room) => {

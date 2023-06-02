@@ -57,6 +57,6 @@ const deletedChats=async()=>{
 
  };
  if(process.argv[2]==="--delete"){
-  //deletedPosts();
-  deletedChats();
+  deletedPosts();
+ // deletedChats();
  }

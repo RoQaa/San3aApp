@@ -53,7 +53,8 @@ const userSchema=new mongoose.Schema({
     role:{
         type:String,
         enum:['customer','worker','admin'],
-        default:'customer'
+        default:'customer',
+        required:[true,"u must choose role"]
     },
     // createdAt:{
     //     type:Date,

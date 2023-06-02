@@ -39,18 +39,18 @@ let now =  Date.now();
 let date=this._id.getTimestamp();
 let diffMs = (now - date); // milliseconds between now & Christmas
 let diffDays = Math.floor(diffMs / 86400000); // days
-let diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
-let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+let diffHrs = Math.floor((diffMs % 86400000) / 3600000)+1; // hours
+let diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000)+1; // minutes
 if(diffDays>=1){
     let date=this._id.getTimestamp();
     date=date.toString();
    return date.substring(4,15);
 }
-  else if(diffMins>=0&&diffMins<=59){
-   return `${diffMins} minutes ago`;
+  else if(diffMins>0&&diffMins<=59){
+   return `${diffMins-1} min`;
    }
    else if(diffHrs>=1&&diffHrs<=23){
-    return `${diffHrs} hours`
+    return `${diffHrs-1} hours`
    }
    
 }); 

@@ -39,8 +39,8 @@ exports.getPosts=catchAsync(async (req,res,next) => {
   //protect handler
   const data=req.user;
   
-   //const allPosts=  await Post.find({user:{$ne:data._id}});
-   const allPosts=  await Post.lookup({ from: 'User', localField: 'user', foreignField: '_id', as: 'users' });
+   const allPosts=  await Post.find({user:{$ne:data._id}});
+   //const allPosts=  await Post.lookup({ from: 'User', localField: 'user', foreignField: '_id', as: 'users' });
  
    
     if(!allPosts){

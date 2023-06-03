@@ -43,6 +43,7 @@ user.password=undefined;
 res.status(statusCode).json({
     status:true,
     message,
+    statusCode:200
     data:{name:user.name,
     photo:user.photo,
     isPaid:user.isPaid},

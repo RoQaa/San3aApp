@@ -44,7 +44,8 @@ res.status(statusCode).json({
     status:true,
     message,
     data:{name:user.name,
-    photo:user.photo},
+    photo:user.photo,
+    isPaid:user.isPaid},
     token
       
     

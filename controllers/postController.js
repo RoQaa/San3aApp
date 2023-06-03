@@ -50,6 +50,7 @@ exports.getPosts = catchAsync(async (req, res, next) => {
   res.status(200).json({
     length: filteredPosts.length,
     status: true,
+    isPaid:data.isPaid,
     data: filteredPosts,
   });
  }
@@ -119,7 +120,7 @@ exports.updatePost = catchAsync(async (req, res, next) => {
 
 exports.getProfilePage = catchAsync(async (req, res, next) => {
   // post id from client
-  let userData = await User.findById(req.body.usId).select('name email countryCode city birthdate role photo rateAverage');
+  let userData = await User.findById(req.body.usId).select('name email countryCode  city birthdate role photo rateAverage');
   if (userData.role === 'user') {
     userData.birthdate = null;
   }
@@ -136,7 +137,7 @@ exports.getProfilePage = catchAsync(async (req, res, next) => {
 exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
-  const userData=await User.findById(user.id).select('name email countryCode city birthdate role photo rateAverage');
+  const userData=await User.findById(user.id).select('name email countryCode isPaid city birthdate role photo rateAverage');
   if (userData.role === 'customer') {
     userData.birthdate = null;
   }

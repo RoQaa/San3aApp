@@ -103,7 +103,8 @@ const userSchema=new mongoose.Schema({
         //required:true
     },
     isPaid:{
-        type:Boolean 
+        type:Boolean,
+        default:false
     },
     address:{
         type:String

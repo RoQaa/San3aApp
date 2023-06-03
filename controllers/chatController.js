@@ -13,7 +13,7 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
     }
 
     var isChat = await Chat.find({to: reciver.id})
-    
+
     if(isChat.length > 0){
       
       const idString = isChat[0]._id.toString();
@@ -27,42 +27,71 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
       }); 
 
     }else{
-        var chat = {
-            to:reciver.id,
-            from:req.user.id
+      const now = new Date();
+      const sendingDate = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      var chat = {
+          to:reciver.id,
+          from:req.user.id,
+          time:sendingtime,
+          data:sendingDate
         }
-        try{
-            const newChat = await Chat.create(chat);
-            
-            res.status(200).json({
-                status: true,
-                message:"chat creatad successfully",
-                chatID:newChat.id,
-                data: null, 
-            }); 
-        }catch(err){
-            return next(new AppError(err.message, 400))
-        }
+      try{
+
+          const newChat = await Chat.create(chat);      
+          res.status(200).json({
+              status: true,
+              message:"chat creatad successfully",
+              chatID:newChat.id,
+              data: null, 
+          }); 
+      }catch(err){
+          return next(new AppError(err.message, 400))
+      }
     }
 })
 
 exports.allChats = catchAsync(async(req, res, next)=>{
-
+  
     var chats = await Chat.find({ $and: [{ latestMessage: { $ne: null}},{ $or: [{ to: req.user.id }, {from: req.user.id }]}]})
-                          .select("-from")
+                          .sort({ time: -1 })
+                          .sort({ date: -1 }) 
+                          .select("-date -time")
                           .populate({
                             path:'to',
                             select:'name photo'
                           })
                           .populate({
-                            path:'latestMessage',
-                            select:'content'
+                            path:'from',
+                            select:'name photo'
                           })
-                          .sort('-createdAt')
+                          .populate({
+                            path:'latestMessage',
+                            select:'text image date time'
+                          })
 
     if(!chats){
-        return next(new AppError("Not Found Chats",404))
-    }
+      return next(new AppError("Not Found Chats",404))
+    }                      
+
+    // for (const obj of chats) {
+    //   console.log("in loooooog")
+    //   idto = obj.to.toString()
+    //   if(idto === req.user.id){
+    //     console.log("in iffff")
+    //       obj = obj.populate({
+    //         path:'from',
+    //         select:'name photo'
+    //       })
+    //   }else{
+    //     console.log("in elseeeeeee")
+    //     obj = obj.populate({
+    //       path:'to',
+    //       select:'name photo'
+    //     })
+    //   }
+    // console.log(obj)  
+    // }
 
     res.status(200).json({
         status: true,

@@ -6,9 +6,12 @@ const message = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User" 
     },
-    content: { 
+    text: { 
         type: String, 
         trim: true 
+    },
+    image:{
+      type:String, 
     },
     chat: { type: mongoose.Schema.Types.ObjectId,
         ref: "Chat" 
@@ -17,8 +20,9 @@ const message = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 
     },
+    time:String,
+    date:String
   },
-  { timestamps: true }
 );
 
 const Message = mongoose.model("Message", message);

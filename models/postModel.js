@@ -51,10 +51,10 @@ if(diffDays>=1){
    return date.substring(4,15);
 }
   else if(diffMins>=0&&diffMins<=59){
-   return `${diffMins} min`;
+   return `${diffMins}m`;
    }
    else if(diffHrs>=1&&diffHrs<=23){
-    return `${diffHrs} hours`
+    return `${diffHrs}h`
    }
    
 }); 

@@ -43,7 +43,7 @@ user.password=undefined;
 res.status(statusCode).json({
     status:true,
     message,
-    statusCode:200
+   notError: {statusCode:200},
     data:{name:user.name,
     photo:user.photo,
     isPaid:user.isPaid},
@@ -89,9 +89,10 @@ if(!newUser){
 // })  //sign(payload,secret,options=expires)
 
 //createSendToken(newUser,201,"sign up successfully",res);
-res.status(201).json({
+res.status(200).json({
   status:true,
-  message:"Sign up Successfully"
+  message:"Sign up Successfully",
+  notError: {statusCode:200}
 })
 // const token=signToken(newUser._id);
 

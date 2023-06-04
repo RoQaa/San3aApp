@@ -11,7 +11,7 @@ const message = mongoose.Schema(
         trim: true 
     },
     image:{
-      type:String, 
+      type:Boolean, 
     },
     chat: { type: mongoose.Schema.Types.ObjectId,
         ref: "Chat" 

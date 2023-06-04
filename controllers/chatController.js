@@ -43,7 +43,7 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
               status: true,
               message:"chat creatad successfully",
               chatID:newChat.id,
-              data: null, 
+              data: 0, 
           }); 
       }catch(err){
           return next(new AppError(err.message, 400))

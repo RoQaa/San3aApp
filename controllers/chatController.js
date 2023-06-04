@@ -96,6 +96,7 @@ exports.allChats = catchAsync(async(req, res, next)=>{
     res.status(200).json({
         status: true,
         message:"All chat sent successfully",
+        loginId:req.user.id,
         data: chats
     }); 
 })

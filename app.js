@@ -28,8 +28,7 @@ app.use(helmet()) // set el htttp headers property
 // app.use(morgan('dev'));
 morganBody(app, {
   logAllReqHeader:true,
-  logIP:false,
-  logReqDateTime:false
+
 });
  }
 

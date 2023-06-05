@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const morganBody=require('morgan-body')
 const rateLimit=require('express-rate-limit'); // security
 const helmet=require('helmet'); // security
 const mongoSanitize=require('express-mongo-sanitize'); // security
@@ -23,9 +24,13 @@ app.use(helmet()) // set el htttp headers property
   
 
 //development logging
-if(process.env.NODE_ENV==='development'){
-app.use(morgan('dev'));
-}
+ if(process.env.NODE_ENV==='development'){
+// app.use(morgan('dev'));
+morganBody(app, {
+  logAllReqHeader:true,
+
+});
+ }
 
 
 //Limit requests from same API

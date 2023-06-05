@@ -60,7 +60,7 @@ exports.getPosts = catchAsync(async (req, res, next) => {
     return next(new AppError("there's n post to get",404));
   }
   const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
-  filteredPosts.reverse();
+
   if (!filteredPosts) {
     return next(new AppError("there's no posts to Get ", 404));
   }

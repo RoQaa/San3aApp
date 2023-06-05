@@ -6,5 +6,4 @@ const router = express.Router()
 router.route('/sendMessage').post(authController.protect,messageController.sendMessage)
 router.route('/getAllMessages').post(authController.protect,messageController.allMessages)
 
-
 module.exports = router

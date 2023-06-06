@@ -96,6 +96,7 @@ const userSchema=new mongoose.Schema({
     },
     job:{
         type:String,
+        default:null
         //enum:[]
     },
     photo_id:{

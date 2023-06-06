@@ -6,48 +6,56 @@ const {catchAsync} = require('../utils/catchAsync')
 
 exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
 
-    const reciver = await User.findById(req.body.id)
+    const person = await User.findById(req.body.id)
     
-    if(!reciver){
+    if(!person){
       return next(new AppError('No user found with that id',404))
     }
-
-    var isChat = await Chat.find({to: reciver.id})
+    
+    var isChat = await Chat.find({ $or: [{ to: person.id }, {from: person.id }]})
 
     if(isChat.length > 0){
       
-      const idString = isChat[0]._id.toString();
+      const idString = isChat[0]._id.toString(); 
+
       const messages = await Message.find({ chat: idString })
+
+      if(!messages){
+        return next(new AppError('Sorry, Cannot find messages belongs to yhis chat ', 404))
+      }
 
       res.status(200).json({
           status: true,
           message:"Access successfully",
-          chatID: isChat.id,
+          chatID: idString,
           data: messages
       }); 
 
     }else{
+      
       const now = new Date();
       const sendingDate = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
       const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      
       var chat = {
-          to:reciver.id,
+          to:person.id,
           from:req.user.id,
           time:sendingtime,
           data:sendingDate
         }
-      try{
 
-          const newChat = await Chat.create(chat);      
-          res.status(200).json({
-              status: true,
-              message:"chat creatad successfully",
-              chatID:newChat.id,
-              data: 0, 
-          }); 
-      }catch(err){
-          return next(new AppError(err.message, 400))
+      const newChat = await Chat.create(chat);  
+      
+      if(!newChat){
+        return next(new AppError('Sorry, Cannot create chat ', 404))
       }
+
+      res.status(200).json({
+          status: true,
+          message:"chat creatad successfully",
+          chatID:newChat.id,
+          data: 0, 
+      }); 
     }
 })
 
@@ -102,25 +110,69 @@ exports.allChats = catchAsync(async(req, res, next)=>{
 })
 
 exports.deleteAllChats = catchAsync(async(req, res, next)=>{
-  const chat = Chat.deleteMany({ $or: [{ to: req.user.id }, {from: req.user.id }]})
+
+  const chats = await Chat.deleteMany({ $or: [{ to: req.user.id }, {from: req.user.id }]})
   
-  if(!chat){
+  if(!chats){
     return next(new AppError('Sorry, Cannot delete chats',404))
   }
-  res.status(204).json({
+
+  res.status(200).json({
     status:true,
-    data: null
+    message:"deleted successfully",
+    
   })
 })
 
 exports.deleteChat = catchAsync(async(req, res, next)=>{
-  const chat = Chat.findByIdAndDelete(req.body.id)
+ 
+  const chat = await Chat.findByIdAndDelete(req.body.chatId)
+  await Message.deleteMany({chat: req.body.chatId})
+
   if(!chat){
     return next(new AppError('Sorry, No chat exist with this id ', 404))
   }
-  res.status(204).json({
+
+  res.status(200).json({
     status:true,
     message:"deleted successfully",
-    data: null
   })
+
+})
+
+exports.filterChat = catchAsync(async(req, res, next) =>{
+
+  const Chats = await Chat.find({ $or: [{ to: req.user._id }, {from: req.user._id }]})
+                        .sort({ time: -1 })
+                        .sort({ date: -1 }) 
+                        .select("-date -time")
+                        .populate({
+                          path:'to',
+                          select:'name photo job'
+                        })
+                        .populate({
+                          path:'from',
+                          select:'name photo job'
+                        })
+                        .populate({
+                          path:'latestMessage',
+                          select:'text date time'
+                        })
+
+  if(!Chats){
+    return next(new AppError("Not Found Chats",404))
+  }
+
+  const filterChats = Chats.filter((chat) => (chat.to.job === req.body.job || chat.from.job === req.body.job));
+
+  if (!filterChats) {
+    return next(new AppError("there's no posts to Get ", 404));
+  }
+
+  res.status(200).json({
+    status: true,
+    message:'filter done',
+    data: filterChats,
+  });
+
 })

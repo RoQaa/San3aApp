@@ -55,10 +55,13 @@ exports.getPosts = catchAsync(async (req, res, next) => {
   });
  }
  if(req.body.job){
+  
   const allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job});
+  
   if(!allPosts){
     return next(new AppError("there's n post to get",404));
   }
+
   const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
 
   if (!filteredPosts) {
@@ -78,7 +81,7 @@ exports.deletePost = catchAsync(async (req, res, next) => {
   const user =req.user;
   
   if(req.body.userId!==user.id || !req.body.userId){
-    return next(new AppError("u don't have access to this operation",401));
+    return next(new AppError("You don't have access to this operation",401));
   }
   const deletePost = await Post.findByIdAndDelete(req.body.postId);
 

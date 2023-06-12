@@ -169,7 +169,7 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
 exports.getSavedPosts=catchAsync(async(req,res,next)=>{
   //ProtectHandler
   const user=req.user;
-  const AllSavedPosts=await Post.aggregate([
+  const AllSavedPosts= await Post.aggregate([
     {
       $unwind:'$SavedById'
     },
@@ -178,12 +178,38 @@ exports.getSavedPosts=catchAsync(async(req,res,next)=>{
         SavedById:user.id,
        }
      },
+
+     {
+     $lookup:
+    {
+        from: User.collection.name,
+        localField: "user",
+        foreignField: "_id",
+        pipeline: [ {$project: {
+          name: 1,
+        //  photo:1
+        }, } ],
+        as: "userData"
+    }
+    },
+    {
+      $project:{
+        user:0,
+        createdAt:0,
+        updatedAt:0,
+        __v:0,
+      }
+    }
   ])
   if(!AllSavedPosts){
     return next(new AppError("There's no Saved Posts"),404);
   }
+  if(AllSavedPosts.length===0){
+    return next(new AppError("There's no Saved Posts"),404);
+  }
   res.status(200).json({
     status:true,
+    length:AllSavedPosts.length,
     message:"saved Posts returned Successfully",
     data:AllSavedPosts
   })

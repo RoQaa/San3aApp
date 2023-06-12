@@ -15,8 +15,34 @@ const chat = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
     },
+    deleteFrom:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    deleteTo:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    rechatTimeFrom:{
+      type : String,
+      default: null
+    },
+    rechatDateFrom:{
+      type : String,
+      default: null
+    },
+    rechatTimeTo:{
+      type : String,
+      default: null
+    },
+    rechatDateTo:{
+      type : String,
+      default: null
+    },
     time:String,
-    date:String
+    date:String,
   },
 );
 

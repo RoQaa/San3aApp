@@ -15,36 +15,134 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
     var isChat = await Chat.find({ $or: [{ to: person.id }, {from: person.id }]})
 
     if(isChat.length > 0){
-      
-      const idString = isChat[0]._id.toString(); 
 
-      const messages = await Message.find({ chat: idString })
+      const idString = isChat[0]._id.toString();
 
-      if(!messages){
-        return next(new AppError('Sorry, Cannot find messages belongs to yhis chat ', 404))
+      var deleteFrom = ""
+      var deleteTo = ""
+      if(isChat[0].deleteFrom !== null){
+        deleteFrom = isChat[0].deleteFrom.toString()
+      }else if(isChat[0].deleteTo !== null){
+        deleteTo = isChat[0].deleteTo.toString()
       }
+    
+      if(deleteFrom === req.user.id || deleteTo === req.user.id){
 
-      res.status(200).json({
+        res.status(200).json({
           status: true,
           message:"Access successfully",
           chatID: idString,
-          data: messages
-      }); 
+          data: []
+        });
 
+      }else{
+        
+        if(isChat[0].from.toString() === req.user.id && isChat[0].rechatDateFrom !== null){
+
+          const messages = await Message.find({$and: [{ chat: isChat[0]._id},
+            { date:{$gte:isChat[0].rechatDateFrom}},{ time:{$gte:isChat[0].rechatTimeFrom}},]})
+                                        .select("-chat")
+                                        .sort({ time: 1 })
+                                        .sort({ date: 1 }) 
+          
+          if(!messages){
+              return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
+          }                
+    
+          res.status(200).json({
+              status: true,
+              message:"All Messages sent successfully",
+              chatID: idString,
+              data: messages
+          })
+    
+        }else if(isChat[0].from.toString() === req.user.id && isChat[0].rechatDateTo !== null){
+          
+          const messages = await Message.find({chat: isChat[0]._id})
+                                      .select("-chat")
+                                      .sort({ time: 1 })   
+                                      .sort({ date: 1 }) 
+                                                             
+          if(!messages){
+              return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
+          }                
+    
+          res.status(200).json({
+              status: true,
+              message:"All Messages sent successfully",
+              chatID: idString,
+              data: messages
+          })
+    
+        }else if(isChat[0].to.toString() === req.user.id && isChat[0].rechatDateTo !== null){
+         
+          const messages = await Message.find({$and: [{ chat: isChat[0]._id},
+            { date:{$gte:isChat[0].rechatDateTo}},{ time:{$gte:isChat[0].rechatTimeTo}},]})
+                                        .select("-chat")
+                                        .sort({ time: 1 })
+                                        .sort({ date: 1 })                              
+          if(!messages){
+          return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
+          }                
+    
+          res.status(200).json({
+          status: true,
+          message:"All Messages sent successfully",
+          chatID: idString,
+          data: messages
+          })
+
+        }else if(isChat[0].to.toString() === req.user.id && isChat[0].rechatDateFrom !== null){
+          
+          const messages = await Message.find({chat: isChat[0]._id})
+                                      .select("-chat")
+                                      .sort({ date: 1 }) 
+                                      .sort({ time: 1 })                              
+          if(!messages){
+              return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
+          }                
+    
+          res.status(200).json({
+              status: true,
+              message:"All Messages sent successfully",
+              chatID: idString,
+              data: messages
+          })
+    
+        }else{
+
+          const messages = await Message.find({chat: isChat[0]._id})
+                                      .select("-chat")
+                                      .sort({ time: 1 })   
+                                      .sort({ date: 1 }) 
+                                                             
+          if(!messages){
+              return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
+          }                
+    
+          res.status(200).json({
+              status: true,
+              message:"All Messages sent successfully",
+              chatID: idString,
+              data: messages
+          })
+        }
+      }
+       
     }else{
       
       const now = new Date();
       const sendingDate = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      const sendingtime = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: false });
       
-      var chat = {
+      var isChat = {
           to:person.id,
           from:req.user.id,
           time:sendingtime,
-          data:sendingDate
+          date:sendingDate
         }
 
-      const newChat = await Chat.create(chat);  
+      const newChat = await Chat.create(isChat);  
       
       if(!newChat){
         return next(new AppError('Sorry, Cannot create chat ', 404))
@@ -61,83 +159,104 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
 
 exports.allChats = catchAsync(async(req, res, next)=>{
   
-    var chats = await Chat.find({ $and: [{ latestMessage: { $ne: null}},{ $or: [{ to: req.user.id }, {from: req.user.id }]}]})
-                          .sort({ time: -1 })
-                          .sort({ date: -1 }) 
-                          .select("-date -time")
-                          .populate({
-                            path:'to',
-                            select:'name photo'
-                          })
-                          .populate({
-                            path:'from',
-                            select:'name photo'
-                          })
-                          .populate({
-                            path:'latestMessage',
-                            select:'text date time'
-                          })
+  var chats = await Chat.find({$and: [{ latestMessage: { $ne: null}},
+                                      {$or: [{ to: req.user.id }, {from: req.user.id }]},
+                                      {$and:[{deleteFrom: { $ne: req.user.id}},{deleteTo: { $ne: req.user.id}}]}]})
+                        .sort({ date: -1 }) 
+                        .sort({ time: -1 })
+                        .select("-deleteFrom -deleteTo -rechatDateFrom -rechatTimeFrom -rechatTimeTo -rechatDateTo -date -time ")
+                        .populate({
+                          path:'to',
+                          select:'name photo'
+                        })
+                        .populate({
+                          path:'from',
+                          select:'name photo'
+                        })
+                        .populate({
+                          path:'latestMessage',
+                          select:'text date time'
+                        })
 
-    if(!chats){
-      return next(new AppError("Not Found Chats",404))
-    }                      
-
-    // for (const obj of chats) {
-    //   console.log("in loooooog")
-    //   idto = obj.to.toString()
-    //   if(idto === req.user.id){
-    //     console.log("in iffff")
-    //       obj = obj.populate({
-    //         path:'from',
-    //         select:'name photo'
-    //       })
-    //   }else{
-    //     console.log("in elseeeeeee")
-    //     obj = obj.populate({
-    //       path:'to',
-    //       select:'name photo'
-    //     })
-    //   }
-    // console.log(obj)  
-    // }
-
-    res.status(200).json({
-        status: true,
-        message:"All chat sent successfully",
-        loginId:req.user.id,
-        data: chats
-    }); 
-})
-
-exports.deleteAllChats = catchAsync(async(req, res, next)=>{
-
-  const chats = await Chat.deleteMany({ $or: [{ to: req.user.id }, {from: req.user.id }]})
-  
   if(!chats){
-    return next(new AppError('Sorry, Cannot delete chats',404))
-  }
+    return next(new AppError("Not Found Chats",404))
+  }                      
 
   res.status(200).json({
-    status:true,
-    message:"deleted successfully",
-    
-  })
+      status: true,
+      message:"All chat sent successfully",
+      loginId:req.user.id,
+      data: chats
+  }); 
 })
 
 exports.deleteChat = catchAsync(async(req, res, next)=>{
- 
-  const chat = await Chat.findByIdAndDelete(req.body.chatId)
-  await Message.deleteMany({chat: req.body.chatId})
+
+  const chat = await Chat.findById(req.body.chatId)
 
   if(!chat){
     return next(new AppError('Sorry, No chat exist with this id ', 404))
   }
 
+  const idFrom = chat.from.toString();
+  if(req.user.id === idFrom){
+    await Chat.findByIdAndUpdate(chat._id, {deleteFrom : req.user.id}, {
+      runValidators: true,
+      new: true,
+    });
+  }else{
+    await Chat.findByIdAndUpdate(chat._id, {deleteTo : req.user.id}, {
+      runValidators: true,
+      new: true,
+    });
+  }
+  
+  if(chat.deleteFrom !== null && chat.deleteTo !== null){
+    const chat = await Chat.findByIdAndDelete(req.body.chatId)
+    await Message.deleteMany({chat: req.body.chatId})
+    if(!chat){
+      return next(new AppError('Sorry, Cannot delete chat', 404))
+    }
+  }
+
   res.status(200).json({
     status:true,
     message:"deleted successfully",
   })
 
+})
+
+exports.deleteAllChats = catchAsync(async(req, res, next)=>{
+
+  const chats = await Chat.find({ $or: [{ to: req.user.id }, {from: req.user.id }]})
+
+  console.log(chats)
+
+  if(!chats){
+    return next(new AppError('Sorry, No chat exist with this id ', 404))
+  }
+  
+  for (let i = 0; i < chats.length; i++) {
+
+    const idFrom = chats[i].from.toString();
+    if(req.user.id === idFrom){
+      await Chat.findByIdAndUpdate(chats[i]._id, {deleteFrom : req.user.id}, {
+        runValidators: true,
+        new: true,
+      });
+    }else{
+      await Chat.findByIdAndUpdate(chats[i]._id, {deleteTo : req.user.id}, {
+        runValidators: true,
+        new: true,
+      });
+    }
+  }
+
+  res.status(200).json({
+    status:true,
+    message:"deleted successfully",
+  })
+  
 })
 
 exports.filterChat = catchAsync(async(req, res, next) =>{

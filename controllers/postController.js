@@ -33,7 +33,17 @@ exports.addPost = catchAsync(async (req, res, next) => {
     
   });
 });
-
+exports.getPostById=catchAsync(async(req,res,next)=>{
+  const post =await Post.findById(req.body.postId);
+  if(!post){
+    return next(new AppError("there's no post with that id",404));
+  }
+  res.status(200).json({
+    status:true,
+    message:"Post Returned Sucessed",
+    data:post
+  })
+})
 exports.getPosts = catchAsync(async (req, res, next) => {
   //protect handler
   const data = req.user;
@@ -166,6 +176,7 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
     message:"Post Saved Successfully"
    })
 });
+
 exports.getSavedPosts=catchAsync(async(req,res,next)=>{
   //ProtectHandler
   const user=req.user;

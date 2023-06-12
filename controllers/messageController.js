@@ -128,6 +128,7 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
         res.status(200).json({
             status: true,
             message:"All Messages sent successfully",
+            chatID: chat._id,
             data: messages
         })
 
@@ -145,6 +146,7 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
         res.status(200).json({
             status: true,
             message:"All Messages sent successfully",
+            chatID: chat._id,
             data: messages
         })
 
@@ -163,6 +165,7 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
         res.status(200).json({
         status: true,
         message:"All Messages sent successfully",
+        chatID: chat._id,
         data: messages
         })
 
@@ -179,6 +182,7 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
         res.status(200).json({
             status: true,
             message:"All Messages sent successfully",
+            chatID: chat._id,
             data: messages
         })
 
@@ -196,6 +200,7 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
         res.status(200).json({
             status: true,
             message:"All Messages sent successfully",
+            chatID: chat._id,
             data: messages
         })
       }

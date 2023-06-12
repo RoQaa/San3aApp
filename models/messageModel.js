@@ -20,11 +20,6 @@ const message = mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User" 
     },
-    deleteMsg:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
-    },
     time:String,
     date:String
   },

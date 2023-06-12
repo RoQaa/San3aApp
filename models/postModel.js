@@ -20,7 +20,9 @@ const postSchema=mongoose.Schema({
     },
     job:{
         type:String
-    }
+    },
+    SavedById:[String]
+       
    
 },{
     timestamps:true,

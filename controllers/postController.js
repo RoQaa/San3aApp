@@ -153,3 +153,38 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
     },
   });
 });
+exports.AddSavedPost=catchAsync(async(req,res,next)=>{
+  //postHandler
+  const user=req.user;
+  //body=> post Id
+   const addSavedPost=await Post.findByIdAndUpdate(req.body.postId,{$push:{SavedById:user.id}})
+   if(!addSavedPost){
+    return next(new AppError("there's no post to add"),404);
+   }
+   res.status(200).json({
+    status:true,
+    message:"Post Saved Successfully"
+   })
+});
+exports.getSavedPosts=catchAsync(async(req,res,next)=>{
+  //ProtectHandler
+  const user=req.user;
+  const AllSavedPosts=await Post.aggregate([
+    {
+      $unwind:'$SavedById'
+    },
+     {
+       $match:{
+        SavedById:user.id,
+       }
+     },
+  ])
+  if(!AllSavedPosts){
+    return next(new AppError("There's no Saved Posts"),404);
+  }
+  res.status(200).json({
+    status:true,
+    message:"saved Posts returned Successfully",
+    data:AllSavedPosts
+  })
+})

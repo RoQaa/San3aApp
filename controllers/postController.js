@@ -176,6 +176,19 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
     message:"Post Saved Successfully"
    })
 });
+exports.DeleteSavedPost=catchAsync(async(req,res,next)=>{
+  //Portect handler
+  const user=req.user;
+  const deletePost=await Post.findByIdAndUpdate(req.body.postId,{$pull:{SavedById:user.id}});
+  if(!deletePost){
+    return next(new AppError("there's no post to deleted",404));
+
+  }
+  res.status(200).json({
+    status:true,
+    message:"Post Deleted Successfully"
+})
+})
 
 exports.getSavedPosts=catchAsync(async(req,res,next)=>{
   //ProtectHandler

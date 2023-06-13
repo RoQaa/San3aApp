@@ -48,7 +48,7 @@ exports.getPosts = catchAsync(async (req, res, next) => {
   //protect handler
   const data = req.user;
  if(!req.body.job){
-  let allPosts = await Post.find({ user: { $ne: data._id } });
+  let allPosts = await Post.find({ user: { $ne: data._id } }).sort('-updatedAt');
   if(!allPosts){
     return next(new AppError("there's n post to get",404));
   }
@@ -70,7 +70,7 @@ exports.getPosts = catchAsync(async (req, res, next) => {
  }
  if(req.body.job){
   
-  let allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job});
+  let allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job}).sort('-updatedAt');
   
   if(!allPosts){
     return next(new AppError("there's n post to get",404));

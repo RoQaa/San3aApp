@@ -48,43 +48,50 @@ exports.getPosts = catchAsync(async (req, res, next) => {
   //protect handler
   const data = req.user;
  if(!req.body.job){
-  const allPosts = await Post.find({ user: { $ne: data._id } });
+  let allPosts = await Post.find({ user: { $ne: data._id } }).sort('-updatedAt');
   if(!allPosts){
     return next(new AppError("there's n post to get",404));
   }
-  const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+  let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+  
 
   if (!filteredPosts) {
     return next(new AppError("there's no posts to Get ", 404));
   }
+  let posts = filteredPosts.sort(function () {
+    return Math.random() - 0.5;
+  });
   res.status(200).json({
-    length: filteredPosts.length,
+    length: posts.length,
     status: true,
     isPaid:data.isPaid,
-    data: filteredPosts,
+    data: posts,
   });
  }
  if(req.body.job){
   
-  const allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job});
+  let allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job}).sort('-updatedAt');
   
   if(!allPosts){
     return next(new AppError("there's n post to get",404));
   }
 
-  const filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+  let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
 
   if (!filteredPosts) {
     return next(new AppError("there's no posts to Get ", 404));
   }
+  let posts = filteredPosts.sort(function () {
+    return Math.random() - 0.5;
+  });
   res.status(200).json({
-    length: filteredPosts.length,
+    length: posts.length,
     status: true,
-    data: filteredPosts,
+    isPaid:data.isPaid,
+    data: posts,
   });
  }
- 
-});
+ });
 
 exports.deletePost = catchAsync(async (req, res, next) => {
   //protect handler
@@ -176,6 +183,19 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
     message:"Post Saved Successfully"
    })
 });
+exports.DeleteSavedPost=catchAsync(async(req,res,next)=>{
+  //Portect handler
+  const user=req.user;
+  const deletePost=await Post.findByIdAndUpdate(req.body.postId,{$pull:{SavedById:user.id}});
+  if(!deletePost){
+    return next(new AppError("there's no post to deleted",404));
+
+  }
+  res.status(200).json({
+    status:true,
+    message:"Post Deleted Successfully"
+})
+})
 
 exports.getSavedPosts=catchAsync(async(req,res,next)=>{
   //ProtectHandler

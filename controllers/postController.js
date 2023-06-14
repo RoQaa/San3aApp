@@ -255,6 +255,10 @@ exports.checkPaid=catchAsync(async(req,res,next)=>{
   if(user.role==='customer'){
     return next(new AppError("you are customer u don't have to pay any thing",401));
   }
+  if(req.body.isSecure!=='secure'){
+    return next(new AppError("Operation not working please try again",401));
+  }
+  if(req.body.isSecure==='secure'){
 
   const updateUser= await User.findByIdAndUpdate(user.id,{isPaid:true, paidTime:Date.now()}, 
   { runValidators: true,
@@ -266,6 +270,7 @@ exports.checkPaid=catchAsync(async(req,res,next)=>{
   res.status(200).json({
     status:true,
     message:"paid successfully",
-    data:updateUser
+   // data:updateUser
   })
+}
 })

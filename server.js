@@ -13,10 +13,10 @@ const app = require('./app');
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-io.on('connection', (socket) => {
-  console.log(`New client connected: ${socket.id}`);
-})
-//require('./sockets/chatSocket')(io);
+// io.on('connection', (socket) => {
+//   console.log(`New client connected: ${socket.id}`);
+// })
+require('./sockets/chatSocket')(io);
 
 const DB = process.env.DATABASE.replace('<password>', process.env.PASSWORD);
 

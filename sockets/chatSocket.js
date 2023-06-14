@@ -18,7 +18,7 @@ module.exports = io => {
       // Send the message to all sockets in the room
       console.log("chat from client side : " + msg.chat)
       console.log("content from client side : " + msg.content)
-      io.to(msg.chat).emit('res', {content: msg.content, time: message.time});
+      io.to(msg.chat).emit('res', {content: msg.content, time: msg.time});
       
   });
     

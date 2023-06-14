@@ -1,21 +1,8 @@
 module.exports = io => {
   io.on('connection', (socket) => {
- 
-    const connectedUsers = []
-    connectedUsers[socket.id] = { username: 'Guest', status: 'online' };
-    console.log(connectedUsers)
     
-    io.emit('user list update', connectedUsers);
-  
-    // Listen for a disconnection event from the client
-    socket.on('disconnect', () => {
-      connectedUsers[socket.id].status = 'offline';
-      //console.log(connectedUsers)
-      io.emit('user list update', connectedUsers);
-      delete connectedUsers[socket.id];
-      console.log('User disconnected:', socket.id);
-    });
-  
+    console.log("connected to server")
+
     // Join a chat room
     const chatRooms = []
     socket.on('join', (chatId) => {
@@ -27,19 +14,17 @@ module.exports = io => {
     });
     
     // Listen for a message from the client
-    socket.on('chat message', (message) => {
+    socket.on('msg', (msg) => {
       // Send the message to all sockets in the room
-      console.log(message.chat)
-      io.to(message.chat).emit('chat message', {content: message.content, time: message.time});
+      console.log("chat from client side : " + msge.chat)
+      console.log("content from client side : " + msge.content)
+      io.to(msg.chat).emit('res', {content: msg.content, time: message.time});
       
   });
     
-    // //Leave a chat room
-    // socket.on('leave', (room) => {
-    //   socket.leave(room);
-    //   chatRooms[room] = chatRooms[room].filter((id) => id !== socket.id);
-    //   console.log(`User ${socket.id} left room ${room}`);
-    // });
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
   
   });    
 }

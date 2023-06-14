@@ -167,6 +167,13 @@ if(!token){
    if( currentUser.changesPasswordAfter(decoded.iat)){ //iat=> issued at
     return next(new AppError("user has changed password recently please log in again",401))
    } 
+    //5)check paid time and set it false
+  
+      if(currentUser.checkPaidTime(Date.now())){ // => valid for 30 days
+        
+     await User.findByIdAndUpdate(currentUser.id,{isPaid:false});
+      }
+   
    //GRANT ACCESS TO PROTECTED ROUTE
    req.user=currentUser; // pyasse el data le middleware tany
 next();

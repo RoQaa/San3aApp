@@ -174,7 +174,9 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
   //postHandler
   const user=req.user;
   //body=> post Id
-   const addSavedPost=await Post.findByIdAndUpdate(req.body.postId,{$push:{SavedById:user.id}})
+   const addSavedPost=await Post.findByIdAndUpdate(req.body.postId,{$push:{SavedById:user.id}},{ runValidators: true,
+    new: true,
+  })
    if(!addSavedPost){
     return next(new AppError("there's no post to add"),404);
    }
@@ -186,7 +188,7 @@ exports.AddSavedPost=catchAsync(async(req,res,next)=>{
 exports.DeleteSavedPost=catchAsync(async(req,res,next)=>{
   //Portect handler
   const user=req.user;
-  const deletePost=await Post.findByIdAndUpdate(req.body.postId,{$pull:{SavedById:user.id}});
+  const deletePost=await Post.findByIdAndUpdate(req.body.postId,{$pull:{SavedById:user.id}},);
   if(!deletePost){
     return next(new AppError("there's no post to deleted",404));
 
@@ -243,5 +245,27 @@ exports.getSavedPosts=catchAsync(async(req,res,next)=>{
     length:AllSavedPosts.length,
     message:"saved Posts returned Successfully",
     data:AllSavedPosts
+  })
+})
+
+//payment Controller 
+exports.checkPaid=catchAsync(async(req,res,next)=>{
+  //protectHandler 
+  const user =req.user;
+  if(user.role==='customer'){
+    return next(new AppError("you are customer u don't have to pay any thing",401));
+  }
+
+  const updateUser= await User.findByIdAndUpdate(user.id,{isPaid:true, paidTime:Date.now()}, 
+  { runValidators: true,
+  new: true,
+});
+  if(!updateUser){
+    return next(new AppError("there's no user with that id ",404));
+  }
+  res.status(200).json({
+    status:true,
+    message:"paid successfully",
+    data:updateUser
   })
 })

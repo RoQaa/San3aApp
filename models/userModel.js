@@ -112,7 +112,11 @@ const userSchema=new mongoose.Schema({
     },
     bio:{
         type:String
-    }
+    },
+    paidTime:{
+        type:Date
+    },
+  
    // token:String 
 
 },{
@@ -122,6 +126,7 @@ const userSchema=new mongoose.Schema({
 })
 
 // DOCUMENT MIDDLEWARE 
+
 
 userSchema.pre('save',async function(next){
     //only run if password modified
@@ -178,6 +183,11 @@ userSchema.methods.changesPasswordAfter=function(JWTTimestamps){
     return false;
 }
 
+
+
+
+
+
 userSchema.methods.changesRateAvg=function(rate){  //return rate
    let sum = 0;
    for(let i=0; i<rate.length; i++){
@@ -201,6 +211,17 @@ userSchema.methods.changesRateAvg=function(rate){  //return rate
   
 //     return resetToken;
 //   };
+userSchema.methods.checkPaidTime=function(timeNow){
+if(this.paidTime){
+    const paidTime=new Date (this.paidTime);
+    const paidTimeMilieSecondsAfter30Days=paidTime.getTime()+30*24*60*60*1000; // => 30 days
+   
+  return timeNow>paidTimeMilieSecondsAfter30Days;
+}
+
+
+    return false;
+}
 
 userSchema.methods.generateOtp=async function(){
     const OTP=otpGenerator.generate(process.env.OTP_LENGTH,{

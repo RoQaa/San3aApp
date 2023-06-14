@@ -26,8 +26,8 @@ router.route('/addimage').post(upload.single("img"),(req,res)=>{
 
 router.route('/getOneChat').post(authController.protect,chatController.accesOrCreateChat)
 router.route('/getAllChats').get(authController.protect,chatController.allChats)
-router.route('/deleteAllChats').delete(authController.protect,chatController.deleteAllChats)
-router.route('/deleteChat').delete(authController.protect,chatController.deleteChat)
+router.route('/deleteAllChats').post(authController.protect,chatController.deleteAllChats)
+router.route('/deleteChat').post(authController.protect,chatController.deleteChat)
 router.route('/filterChat').post(authController.protect,chatController.filterChat)
 
 module.exports = router

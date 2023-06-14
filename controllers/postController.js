@@ -157,7 +157,7 @@ exports.getProfilePage = catchAsync(async (req, res, next) => {
 exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
-  const userData=await User.findById(user.id).select('name email countryCode isPaid city birthdate role photo rateAverage');
+  const userData=await User.findById(user.id).select('name email  phone countryCode isPaid city birthdate role photo rateAverage');
   if (userData.role === 'customer') {
     userData.birthdate = null;
   }

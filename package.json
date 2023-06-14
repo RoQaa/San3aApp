@@ -8,6 +8,9 @@
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js"
   },
+  "engines" : { 
+    "node" : " >=18 " 
+  },
   "author": "FS",
   "license": "ISC",
   "dependencies": {

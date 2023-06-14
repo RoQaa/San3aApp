@@ -255,7 +255,7 @@ exports.checkPaid=catchAsync(async(req,res,next)=>{
   if(user.role==='customer'){
     return next(new AppError("you are customer u don't have to pay any thing",401));
   }
-  if(req.body.isSecure!=='not secure'){
+  if(req.body.isSecure!=='secure'){
     return next(new AppError("Operation not working please try again",401));
   }
   if(req.body.isSecure==='secure'){

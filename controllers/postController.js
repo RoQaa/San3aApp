@@ -3,6 +3,7 @@ const User = require('./../models/userModel');
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
 const uploadImage = require('../utils/uploadImage');
+
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
@@ -10,11 +11,12 @@ const filterObj = (obj, ...allowedFields) => {
   });
   return newObj;
 };
+
 exports.addPost = catchAsync(async (req, res, next) => {
   //protect handler
   const user = req.user._id;
   if (!user) {
-    return next(new AppError("Please log in first", 404));
+    return next(new AppError('Please log in first', 404));
   }
 
   if (req?.files?.image) {
@@ -30,75 +32,78 @@ exports.addPost = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: true,
     message: 'Post Created Sucessfully',
-    
   });
 });
-exports.getPostById=catchAsync(async(req,res,next)=>{
-  const post =await Post.findById(req.body.postId);
-  if(!post){
-    return next(new AppError("there's no post with that id",404));
+
+exports.getPostById = catchAsync(async (req, res, next) => {
+  const post = await Post.findById(req.body.postId);
+  if (!post) {
+    return next(new AppError("there's no post with that id", 404));
   }
   res.status(200).json({
-    status:true,
-    message:"Post Returned Sucessed",
-    data:post
-  })
-})
+    status: true,
+    message: 'Post Returned Sucessed',
+    data: post,
+  });
+});
+
 exports.getPosts = catchAsync(async (req, res, next) => {
   //protect handler
   const data = req.user;
- if(!req.body.job){
-  let allPosts = await Post.find({ user: { $ne: data._id } }).sort('-updatedAt');
-  if(!allPosts){
-    return next(new AppError("there's n post to get",404));
-  }
-  let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
-  
+  if (!req.body.job) {
+    let allPosts = await Post.find({ user: { $ne: data._id } }).sort(
+      '-updatedAt'
+    );
+    if (!allPosts) {
+      return next(new AppError("there's n post to get", 404));
+    }
+    let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
 
-  if (!filteredPosts) {
-    return next(new AppError("there's no posts to Get ", 404));
+    if (!filteredPosts) {
+      return next(new AppError("there's no posts to Get ", 404));
+    }
+    let posts = filteredPosts.sort(function () {
+      return Math.random() - 0.5;
+    });
+    res.status(200).json({
+      length: posts.length,
+      status: true,
+      isPaid: data.isPaid,
+      data: posts,
+    });
   }
-  let posts = filteredPosts.sort(function () {
-    return Math.random() - 0.5;
-  });
-  res.status(200).json({
-    length: posts.length,
-    status: true,
-    isPaid:data.isPaid,
-    data: posts,
-  });
- }
- if(req.body.job){
-  
-  let allPosts = await Post.find({ user: { $ne: data._id } }).find({job:req.body.job}).sort('-updatedAt');
-  
-  if(!allPosts){
-    return next(new AppError("there's n post to get",404));
-  }
+  if (req.body.job) {
+    let allPosts = await Post.find({ user: { $ne: data._id } })
+      .find({ job: req.body.job })
+      .sort('-updatedAt');
 
-  let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+    if (!allPosts) {
+      return next(new AppError("there's n post to get", 404));
+    }
 
-  if (!filteredPosts) {
-    return next(new AppError("there's no posts to Get ", 404));
+    let filteredPosts = allPosts.filter((post) => post.user.role !== 'worker');
+
+    if (!filteredPosts) {
+      return next(new AppError("there's no posts to Get ", 404));
+    }
+    let posts = filteredPosts.sort(function () {
+      return Math.random() - 0.5;
+    });
+    res.status(200).json({
+      length: posts.length,
+      status: true,
+      isPaid: data.isPaid,
+      data: posts,
+    });
   }
-  let posts = filteredPosts.sort(function () {
-    return Math.random() - 0.5;
-  });
-  res.status(200).json({
-    length: posts.length,
-    status: true,
-    isPaid:data.isPaid,
-    data: posts,
-  });
- }
- });
+});
 
 exports.deletePost = catchAsync(async (req, res, next) => {
   //protect handler
-  const user =req.user;
-  
-  if(req.body.userId!==user.id || !req.body.userId){
-    return next(new AppError("You don't have access to this operation",401));
+  const user = req.user;
+
+  if (req.body.userId !== user.id || !req.body.userId) {
+    return next(new AppError("You don't have access to this operation", 401));
   }
   const deletePost = await Post.findByIdAndDelete(req.body.postId);
 
@@ -113,10 +118,10 @@ exports.deletePost = catchAsync(async (req, res, next) => {
 
 exports.updatePost = catchAsync(async (req, res, next) => {
   //protect Handler
-  const user =req.user;
-  
-  if(req.body.userId!==user.id || !req.body.userId){
-    return next(new AppError("u don't have access to this operation",401));
+  const user = req.user;
+
+  if (req.body.userId !== user.id || !req.body.userId) {
+    return next(new AppError("u don't have access to this operation", 401));
   }
   if (req?.files?.image) {
     const file = req.files.image;
@@ -134,13 +139,14 @@ exports.updatePost = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: true,
     message: 'post updated Successfully',
-    
   });
 });
 
 exports.getProfilePage = catchAsync(async (req, res, next) => {
   // post id from client
-  let userData = await User.findById(req.body.usId).select('name email countryCode  city birthdate role photo rateAverage');
+  let userData = await User.findById(req.body.usId).select(
+    'name email countryCode  city birthdate role photo rateAverage'
+  );
   if (userData.role === 'user') {
     userData.birthdate = null;
   }
@@ -157,7 +163,9 @@ exports.getProfilePage = catchAsync(async (req, res, next) => {
 exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
-  const userData=await User.findById(user.id).select('name email  phone countryCode isPaid city birthdate role photo rateAverage');
+  const userData = await User.findById(user.id).select(
+    'name email  phone countryCode isPaid city birthdate role photo rateAverage'
+  );
   if (userData.role === 'customer') {
     userData.birthdate = null;
   }
@@ -170,107 +178,117 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
     },
   });
 });
-exports.AddSavedPost=catchAsync(async(req,res,next)=>{
+
+exports.AddSavedPost = catchAsync(async (req, res, next) => {
   //postHandler
-  const user=req.user;
+  const user = req.user;
   //body=> post Id
-   const addSavedPost=await Post.findByIdAndUpdate(req.body.postId,{$push:{SavedById:user.id}},{ runValidators: true,
-    new: true,
-  })
-   if(!addSavedPost){
-    return next(new AppError("there's no post to add"),404);
-   }
-   res.status(200).json({
-    status:true,
-    message:"Post Saved Successfully"
-   })
+  const addSavedPost = await Post.findByIdAndUpdate(
+    req.body.postId,
+    { $push: { SavedById: user.id } },
+    { runValidators: true, new: true }
+  );
+  if (!addSavedPost) {
+    return next(new AppError("there's no post to add"), 404);
+  }
+  res.status(200).json({
+    status: true,
+    message: 'Post Saved Successfully',
+  });
 });
-exports.DeleteSavedPost=catchAsync(async(req,res,next)=>{
+
+exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
   //Portect handler
-  const user=req.user;
-  const deletePost=await Post.findByIdAndUpdate(req.body.postId,{$pull:{SavedById:user.id}},);
-  if(!deletePost){
-    return next(new AppError("there's no post to deleted",404));
-
+  const user = req.user;
+  const deletePost = await Post.findByIdAndUpdate(req.body.postId, {
+    $pull: { SavedById: user.id },
+  });
+  if (!deletePost) {
+    return next(new AppError("there's no post to deleted", 404));
   }
   res.status(200).json({
-    status:true,
-    message:"Post Deleted Successfully"
-})
-})
-
-exports.getSavedPosts=catchAsync(async(req,res,next)=>{
-  //ProtectHandler
-  const user=req.user;
-  const AllSavedPosts= await Post.aggregate([
-    {
-      $unwind:'$SavedById'
-    },
-     {
-       $match:{
-        SavedById:user.id,
-       }
-     },
-
-     {
-     $lookup:
-    {
-        from: User.collection.name,
-        localField: "user",
-        foreignField: "_id",
-        pipeline: [ {$project: {
-          name: 1,
-        //  photo:1
-        }, } ],
-        as: "userData"
-    }
-    },
-    {
-      $project:{
-        user:0,
-        createdAt:0,
-        updatedAt:0,
-        __v:0,
-      }
-    }
-  ])
-  if(!AllSavedPosts){
-    return next(new AppError("There's no Saved Posts"),404);
-  }
-  if(AllSavedPosts.length===0){
-    return next(new AppError("There's no Saved Posts"),404);
-  }
-  res.status(200).json({
-    status:true,
-    length:AllSavedPosts.length,
-    message:"saved Posts returned Successfully",
-    data:AllSavedPosts
-  })
-})
-
-//payment Controller 
-exports.checkPaid=catchAsync(async(req,res,next)=>{
-  //protectHandler 
-  const user =req.user;
-  if(user.role==='customer'){
-    return next(new AppError("you are customer u don't have to pay any thing",401));
-  }
-  if(req.body.isSecure!=='secure'){
-    return next(new AppError("Operation not working please try again",401));
-  }
-  if(req.body.isSecure==='secure'){
-
-  const updateUser= await User.findByIdAndUpdate(user.id,{isPaid:true, paidTime:Date.now()}, 
-  { runValidators: true,
-  new: true,
+    status: true,
+    message: 'Post Deleted Successfully',
+  });
 });
-  if(!updateUser){
-    return next(new AppError("there's no user with that id ",404));
+
+exports.getSavedPosts = catchAsync(async (req, res, next) => {
+  //ProtectHandler
+  const user = req.user;
+  const AllSavedPosts = await Post.aggregate([
+    {
+      $unwind: '$SavedById',
+    },
+    {
+      $match: {
+        SavedById: user.id,
+      },
+    },
+
+    {
+      $lookup: {
+        from: User.collection.name,
+        localField: 'user',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+              //  photo:1
+            },
+          },
+        ],
+        as: 'userData',
+      },
+    },
+    {
+      $project: {
+        user: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        __v: 0,
+      },
+    },
+  ]);
+  if (!AllSavedPosts) {
+    return next(new AppError("There's no Saved Posts"), 404);
+  }
+  if (AllSavedPosts.length === 0) {
+    return next(new AppError("There's no Saved Posts"), 404);
   }
   res.status(200).json({
-    status:true,
-    message:"paid successfully",
-   // data:updateUser
-  })
-}
-})
+    status: true,
+    length: AllSavedPosts.length,
+    message: 'saved Posts returned Successfully',
+    data: AllSavedPosts,
+  });
+});
+
+//payment Controller
+exports.checkPaid = catchAsync(async (req, res, next) => {
+  //protectHandler
+  const user = req.user;
+  if (user.role === 'customer') {
+    return next(
+      new AppError("you are customer u don't have to pay any thing", 401)
+    );
+  }
+  if (req.body.isSecure !== 'secure') {
+    return next(new AppError('Operation not working please try again', 401));
+  }
+  if (req.body.isSecure === 'secure') {
+    const updateUser = await User.findByIdAndUpdate(
+      user.id,
+      { isPaid: true, paidTime: Date.now() },
+      { runValidators: true, new: true }
+    );
+    if (!updateUser) {
+      return next(new AppError("there's no user with that id ", 404));
+    }
+    res.status(200).json({
+      status: true,
+      message: 'paid successfully',
+      // data:updateUser
+    });
+  }
+});

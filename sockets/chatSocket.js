@@ -11,7 +11,7 @@ module.exports = io => {
       // chatRooms[chatId] = chatRooms[chatId] || [];
       // chatRooms[chatId].push(socket.id);
       // console.log(chatRooms)
-      console.log(`User ${socket} joined room ${userId}`);
+      console.log(`User ${socket} has id  ${userId}`);
       clients[userId] = socket
       console.log(clients)
     });

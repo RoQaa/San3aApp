@@ -1,5 +1,6 @@
 const axios = require('axios');
 const crypto = require('crypto');
+const User = require('../models/userModel');
 
 exports.initiateCredit = async (req,res)=>{
   try {
@@ -83,7 +84,7 @@ const getPaymentToken = async (order, token)=> {
     "order_id": order,
     "billing_data": {
       "apartment": "NA", 
-      "email": "claudette09@exa.com", 
+      "email": "test@gmail.com", 
       "floor": "NA", 
       "first_name": "Clifford", 
       "street": "NA", 
@@ -181,9 +182,14 @@ exports.callback = async (req, res)=> {
 
   console.log("hashed "+ hashed)
   console.log("hmac "+ hmac)
-  
+
+  const email = sortedData.shipping_data.email
+  console.log("email " + email)
   if (hashed === hmac) {
- 
+
+    await User.findOneAndUpdate({email:email},{ isPaid: true, paidTime: Date.now() },
+    { runValidators: true, new: true })
+
     res.send('secure');
 
     return;

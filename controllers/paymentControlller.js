@@ -165,8 +165,8 @@ exports.callback = async (req, res)=> {
          connectedString += sortedData.order.id
       }else if(key == 'source_data'){
         connectedString += sortedData.source_data.pan
-        connectedString += sortedData.source_data.type
         connectedString += sortedData.source_data.sub_type
+        connectedString += sortedData.source_data.type
       }else{
         connectedString += sortedData[key];
       }  

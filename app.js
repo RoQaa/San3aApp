@@ -97,7 +97,9 @@ app.delete('/api/v1/tours/:id', DeleteTour);
 
 app.get('/',(req,res)=>{
   res.status(200).json({
-   message:"Helllllllo"
+   message:"Welcome to our Graduated Project",
+   ARMessage:"اهلا ومرحبا بكم في مشروع تخرجنا",
+   members:"Farouk, Sohila, Mohamed,Manar,Ahmed"
   })
 })
 

@@ -1,5 +1,6 @@
 const Post = require('./../models/postModel');
 const User = require('./../models/userModel');
+const ReportPost = require('../models/reportPostModel');
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
 const uploadImage = require('../utils/uploadImage');
@@ -32,18 +33,6 @@ exports.addPost = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: true,
     message: 'Post Created Sucessfully',
-  });
-});
-
-exports.getPostById = catchAsync(async (req, res, next) => {
-  const post = await Post.findById(req.body.postId);
-  if (!post) {
-    return next(new AppError("there's no post with that id", 404));
-  }
-  res.status(200).json({
-    status: true,
-    message: 'Post Returned Sucessed',
-    data: post,
   });
 });
 
@@ -142,40 +131,16 @@ exports.updatePost = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getProfilePage = catchAsync(async (req, res, next) => {
-  // post id from client
-  let userData = await User.findById(req.body.usId).select(
-    'name email countryCode  city birthdate role photo rateAverage'
-  );
-  if (userData.role === 'user') {
-    userData.birthdate = null;
-  }
-  const posts = await Post.find({ user: userData.id });
-  res.status(200).json({
-    status: true,
-    data: {
-      userData,
-      posts,
-    },
-  });
-});
+exports.ReportPost = catchAsync(async (req, res, next) => {
+  const reportPost = await ReportPost.create(req.body);
 
-exports.getMyProfilePage = catchAsync(async (req, res, next) => {
-  // protectHandler
-  const user = req.user;
-  const userData = await User.findById(user.id).select(
-    'name email  phone countryCode isPaid city birthdate role photo rateAverage'
-  );
-  if (userData.role === 'customer') {
-    userData.birthdate = null;
+  if (!reportPost) {
+    return next(new AppError("sorry, can't report on post"), 404);
   }
-  const posts = await Post.find({ user: userData.id });
+
   res.status(200).json({
     status: true,
-    data: {
-      userData,
-      posts,
-    },
+    message: 'Post reported Sucessfully',
   });
 });
 
@@ -194,21 +159,6 @@ exports.AddSavedPost = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: true,
     message: 'Post Saved Successfully',
-  });
-});
-
-exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
-  //Portect handler
-  const user = req.user;
-  const deletePost = await Post.findByIdAndUpdate(req.body.postId, {
-    $pull: { SavedById: user.id },
-  });
-  if (!deletePost) {
-    return next(new AppError("there's no post to deleted", 404));
-  }
-  res.status(200).json({
-    status: true,
-    message: 'Post Deleted Successfully',
   });
 });
 
@@ -264,31 +214,66 @@ exports.getSavedPosts = catchAsync(async (req, res, next) => {
   });
 });
 
-//payment Controller
-exports.checkPaid = catchAsync(async (req, res, next) => {
-  //protectHandler
+exports.getPostById = catchAsync(async (req, res, next) => {
+  const post = await Post.findById(req.body.postId);
+  if (!post) {
+    return next(new AppError("there's no post with that id", 404));
+  }
+  res.status(200).json({
+    status: true,
+    message: 'Post Returned Sucessed',
+    data: post,
+  });
+});
+
+exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
+  //Portect handler
   const user = req.user;
-  if (user.role === 'customer') {
-    return next(
-      new AppError("you are customer u don't have to pay any thing", 401)
-    );
+  const deletePost = await Post.findByIdAndUpdate(req.body.postId, {
+    $pull: { SavedById: user.id },
+  });
+  if (!deletePost) {
+    return next(new AppError("there's no post to deleted", 404));
   }
-  if (req.body.isSecure !== 'secure') {
-    return next(new AppError('Operation not working please try again', 401));
+  res.status(200).json({
+    status: true,
+    message: 'Post Deleted Successfully',
+  });
+});
+
+exports.getProfilePage = catchAsync(async (req, res, next) => {
+  // post id from client
+  let userData = await User.findById(req.body.usId).select(
+    'name email countryCode  city birthdate role photo rateAverage'
+  );
+  if (userData.role === 'user') {
+    userData.birthdate = null;
   }
-  if (req.body.isSecure === 'secure') {
-    const updateUser = await User.findByIdAndUpdate(
-      user.id,
-      { isPaid: true, paidTime: Date.now() },
-      { runValidators: true, new: true }
-    );
-    if (!updateUser) {
-      return next(new AppError("there's no user with that id ", 404));
-    }
-    res.status(200).json({
-      status: true,
-      message: 'paid successfully',
-      // data:updateUser
-    });
+  const posts = await Post.find({ user: userData.id });
+  res.status(200).json({
+    status: true,
+    data: {
+      userData,
+      posts,
+    },
+  });
+});
+
+exports.getMyProfilePage = catchAsync(async (req, res, next) => {
+  // protectHandler
+  const user = req.user;
+  const userData = await User.findById(user.id).select(
+    'name email  phone countryCode isPaid city birthdate role photo rateAverage'
+  );
+  if (userData.role === 'customer') {
+    userData.birthdate = null;
   }
+  const posts = await Post.find({ user: userData.id });
+  res.status(200).json({
+    status: true,
+    data: {
+      userData,
+      posts,
+    },
+  });
 });

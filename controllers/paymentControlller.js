@@ -136,7 +136,6 @@ exports.callback = catchAsync(async (req, res,next)=> {
   const sortedArray = Object.entries(data).sort();
   const sortedData = Object.fromEntries(sortedArray);
 
-  console.log(sortedData)
   const array = [
     'amount_cents',
     'created_at',
@@ -174,17 +173,11 @@ exports.callback = catchAsync(async (req, res,next)=> {
     }
   })
 
-  console.log("connectedString " + connectedString)
-
   const secret = process.env.PAYMOB_HMAC;
 
   const hashed = crypto.createHmac('SHA512', secret).update(connectedString).digest('hex');
 
-  console.log("hashed "+ hashed)
-  console.log("hmac "+ hmac)
-
   const email = sortedData.order.shipping_data.email
-  console.log("email " + email)
 
   if (hashed === hmac) {
 
@@ -194,7 +187,7 @@ exports.callback = catchAsync(async (req, res,next)=> {
     if(!user){
       return next(" no user with this email ",404)
     }
-    
+
     res.send('secure');
 
     return;

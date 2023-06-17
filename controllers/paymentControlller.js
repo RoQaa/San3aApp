@@ -135,7 +135,7 @@ exports.callback = async (req, res)=> {
   // const data = JSON.parse(data2)
 
   const request = req.body
-  const data = request[0].obj
+  const data = request[0]
   console.log("obj" + data)
 
   const hmac = process.env.PAYMOB_HMAC;

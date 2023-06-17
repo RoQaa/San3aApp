@@ -133,9 +133,11 @@ const getPaymentToken = async (order, token)=> {
 exports.callback = async (request, response)=> {
   //const data = {"id": 112710059, "pending": false, "amount_cents": 10000, "success": false, "is_auth": false, "is_capture": false, "is_standalone_payment": true, "is_voided": false, "is_refunded": false, "is_3d_secure": false, "integration_id": 3823371, "profile_id": 791483, "has_parent_transaction": false, "order": {"id": 129394977, "created_at": "2023-06-15T13:25:37.415980", "delivery_needed": false, "merchant": {"id": 791483, "created_at": "2023-05-18T13:09:45.984324", "phones": ["+201126909842"], "company_emails": ["SohilaWahed@gmail.com"], "company_name": "Sohila Wahed", "state": "", "country": "EGY", "city": "Cairo", "postal_code": "", "street": ""}, "collector": null, "amount_cents": 100, "shipping_data": {"id": 63632212, "first_name": "Mohamed Ahmed", "last_name": "NA", "street": "NA", "building": "NA", "floor": "NA", "apartment": "NA", "city": "NA", "state": "NA", "country": "NA", "email": "m@gmail.com", "phone_number": "+201207117878", "postal_code": "NA", "extra_description": "", "shipping_method": "UNK", "order_id": 129394977, "order": 129394977}, "currency": "EGP", "is_payment_locked": true, "is_return": false, "is_cancel": false, "is_returned": false, "is_canceled": false, "merchant_order_id": null, "wallet_notification": null, "paid_amount_cents": 0, "notify_user_with_email": false, "items": [], "order_url": "https://accept.paymob.com/standalone/?ref=i_LRR2S252R3BDc05semtjOFFnWm9IMERrZz09X1JDaXJ1SzN6UnlZalJVRXNkVnY2eFE9PQ", "commission_fees": 0, "delivery_fees_cents": 0, "delivery_vat_cents": 0, "payment_method": "tbc", "merchant_staff_tag": null, "api_source": "OTHER", "data": {}}, "created_at": "2023-06-15T13:26:21.303221", "transaction_processed_callback_responses": [], "currency": "EGP", "source_data": {"type": "card", "pan": "2346", "sub_type": "MasterCard", "tenure": null}, "api_source": "IFRAME", "terminal_id": null, "merchant_commission": 0, "installment": null, "discount_details": [], "is_void": false, "is_refund": false, "data": {}, "is_hidden": false, "payment_key_claims": {"user_id": 1370514, "amount_cents": 10000, "currency": "EGP", "integration_id": 3823371, "order_id": 129394977, "billing_data": {"first_name": "Mohamed Ahmed", "last_name": "NA", "street": "NA", "building": "NA", "floor": "NA", "apartment": "NA", "city": "NA", "state": "NA", "country": "NA", "email": "m@gmail.com", "phone_number": "+201207117878", "postal_code": "NA", "extra_description": "NA"}, "lock_order_when_paid": false, "extra": {}, "single_payment_attempt": false, "exp": 1686828337, "pmk_ip": "105.196.224.128"}, "error_occured": false, "is_live": false, "other_endpoint_reference": null, "refunded_amount_cents": 0, "source_id": -1, "is_captured": false, "captured_amount": 0, "merchant_staff_tag": null, "updated_at": "2023-06-15T13:26:21.388106", "is_settled": false, "bill_balanced": false, "is_bill": false, "owner": 1370514, "parent_transaction": null}
 
-  const data = request.body.obj;  
+  const data = request.body.obj; 
+  
+  console.log("obj" + data)
 
-  const hmac = data.hmac;
+  const hmac = process.env.PAYMOB_HMAC;
 
   const sortedArray = Object.entries(data).sort();
 
@@ -178,11 +180,14 @@ exports.callback = async (request, response)=> {
     }
   })
 
-  console.log(connectedString)
+  console.log("connectedString " + connectedString)
 
   const secret = process.env.PAYMOB_HMAC;
 
   const hashed = crypto.createHmac('sha512', secret).update(connectedString).digest('hex');
+
+  console.log("hashed "+ hashed)
+  console.log("hmac "+ hmac)
   
   if (hashed === hmac) {
  
@@ -190,7 +195,7 @@ exports.callback = async (request, response)=> {
 
     return;
   }
-  response.send('not secure');
+    response.send('not secure');
 }
 
 

@@ -40,23 +40,33 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
   var deleteTo = ""
 
   if(chat.deleteFrom !== null){
-    deleteFrom = chat.deleteFrom.toString()
-    if(deleteFrom === req.user.id){
-      await Chat.findByIdAndUpdate(req.body.chatId,{
-        deleteFrom : null,
-        rechatTimeFrom : sendingtime ,
-        rechatDateFrom : sendingDate
-      })  
-    }  
+    await Chat.findByIdAndUpdate(req.body.chatId,{
+      deleteFrom : null,
+      rechatTimeFrom : sendingtime ,
+      rechatDateFrom : sendingDate
+    })  
+    // deleteFrom = chat.deleteFrom.toString()
+    // if(deleteFrom === req.user.id){
+    //   await Chat.findByIdAndUpdate(req.body.chatId,{
+    //     deleteFrom : null,
+    //     rechatTimeFrom : sendingtime ,
+    //     rechatDateFrom : sendingDate
+    //   })  
+    // }  
   }else if(chat.deleteTo !== null){
-    deleteTo = chat.deleteTo.toString()
-    if(deleteTo === req.user.id){
-      await Chat.findByIdAndUpdate(chat._id,{
-        deleteTo : null,
-        rechatTimeTo : sendingtime ,
-        rechatDateTo : sendingDate
-      })  
-    }
+    await Chat.findByIdAndUpdate(chat._id,{
+      deleteTo : null,
+      rechatTimeTo : sendingtime ,
+      rechatDateTo : sendingDate
+    }) 
+    // deleteTo = chat.deleteTo.toString()
+    // if(deleteTo === req.user.id){
+    //   await Chat.findByIdAndUpdate(chat._id,{
+    //     deleteTo : null,
+    //     rechatTimeTo : sendingtime ,
+    //     rechatDateTo : sendingDate
+    //   })  
+    // }
   }
  
   try{

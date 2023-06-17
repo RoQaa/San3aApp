@@ -40,23 +40,33 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
   var deleteTo = ""
 
   if(chat.deleteFrom !== null){
-    deleteFrom = chat.deleteFrom.toString()
-    if(deleteFrom === req.user.id){
-      await Chat.findByIdAndUpdate(req.body.chatId,{
-        deleteFrom : null,
-        rechatTimeFrom : sendingtime ,
-        rechatDateFrom : sendingDate
-      })  
-    }  
+    await Chat.findByIdAndUpdate(req.body.chatId,{
+      deleteFrom : null,
+      rechatTimeFrom : sendingtime ,
+      rechatDateFrom : sendingDate
+    })  
+    // deleteFrom = chat.deleteFrom.toString()
+    // if(deleteFrom === req.user.id){
+    //   await Chat.findByIdAndUpdate(req.body.chatId,{
+    //     deleteFrom : null,
+    //     rechatTimeFrom : sendingtime ,
+    //     rechatDateFrom : sendingDate
+    //   })  
+    // }  
   }else if(chat.deleteTo !== null){
-    deleteTo = chat.deleteTo.toString()
-    if(deleteTo === req.user.id){
-      await Chat.findByIdAndUpdate(chat._id,{
-        deleteTo : null,
-        rechatTimeTo : sendingtime ,
-        rechatDateTo : sendingDate
-      })  
-    }
+    await Chat.findByIdAndUpdate(chat._id,{
+      deleteTo : null,
+      rechatTimeTo : sendingtime ,
+      rechatDateTo : sendingDate
+    }) 
+    // deleteTo = chat.deleteTo.toString()
+    // if(deleteTo === req.user.id){
+    //   await Chat.findByIdAndUpdate(chat._id,{
+    //     deleteTo : null,
+    //     rechatTimeTo : sendingtime ,
+    //     rechatDateTo : sendingDate
+    //   })  
+    // }
   }
  
   try{
@@ -220,4 +230,18 @@ exports.allMessages = catchAsync(async(req, res, next)=>{
 //     message:"deleted successfully",
 //   })
 // }) 
- 
+
+exports.deleteMessagesAndChat = catchAsync(async(req,res,next)=>{
+  const chat = await Chat.findByIdAndDelete(req.body.chatId)
+  if(!chat){
+    return next(new AppError('Sorry, Cannot delete chat', 404))
+  }
+  const messages =  await Message.deleteMany({chat: req.body.chatId})
+  if(!messages){
+    return next("No Messages deleted",404)
+  }
+  res.status(200).json({
+    status:"status",
+    message:"Deleted done"
+  })
+})

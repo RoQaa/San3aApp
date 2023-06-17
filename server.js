@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message);
@@ -12,23 +13,16 @@ const http = require('http');
 const app = require('./app');
 const server = http.createServer(app);
 const io = require('socket.io')(server);
-
-io.on('connection', (socket) => {
-  console.log(`New client connected: ${socket.id}`);
-})
-//require('./sockets/chatSocket')(io);
+require('./sockets/chatSocket')(io);
 
 const DB = process.env.DATABASE.replace('<password>', process.env.PASSWORD);
 
 mongoose
   .connect(DB, {
     useNewUrlParser: true,
-    // useCreateIndex:true,
-    //useFindAndModify:false,
     useUnifiedTopology: true,
   })
   .then((con) => {
-    // console.log(con);
     console.log('DB connection Successfully');
   });
 
@@ -44,4 +38,3 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
-

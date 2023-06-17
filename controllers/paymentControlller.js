@@ -1,6 +1,7 @@
 const axios = require('axios');
 const crypto = require('crypto');
-const { URLSearchParams } = require('url');
+const User = require('../models/userModel');
+const { catchAsync } = require('../utils/catchAsync');
 
 exports.initiateCredit = async (req,res)=>{
   try {
@@ -8,11 +9,9 @@ exports.initiateCredit = async (req,res)=>{
     const order = await createOrder(token);
     const paymentToken = await getPaymentToken(order, token);
     const redirectUrl = `https://portal.weaccept.co/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentToken}`;
-
-    console.log("\n" + redirectUrl)
-
+    
     res.end(redirectUrl); //res.json
-
+  
   }catch(error){
     console.log(error)
   }
@@ -46,7 +45,6 @@ const getToken = async ()=>{
 }
 
 const createOrder = async (token)=>{
-  console.log("IncreateOrder " + token)
   
   const data = {
     "auth_token": token,
@@ -62,7 +60,7 @@ const createOrder = async (token)=>{
     headers: {
       'Content-Type': 'application/json',
     }})
-    console.log("\n" + result.data.id )
+
     return result.data.id
 
   }catch(error){
@@ -87,7 +85,7 @@ const getPaymentToken = async (order, token)=> {
     "order_id": order,
     "billing_data": {
       "apartment": "NA", 
-      "email": "claudette09@exa.com", 
+      "email": "test@gmail.com", 
       "floor": "NA", 
       "first_name": "Clifford", 
       "street": "NA", 
@@ -112,7 +110,6 @@ const getPaymentToken = async (order, token)=> {
       'Content-Type': 'application/json',
     }})
 
-    console.log("\n" + result.data.token)
     return result.data.token
 
   }catch(error){
@@ -130,15 +127,13 @@ const getPaymentToken = async (order, token)=> {
 }
 
 // when press pay send to paymob and return with data 
-exports.callback = async (request, response)=> {
+exports.callback = catchAsync(async (req, res,next)=> {
 
-  //const data = request.body;  
-  const data = {"id": 110781348, "pending": false, "amount_cents": 100, "success": false, "is_auth": false, "is_capture": false, "is_standalone_payment": true, "is_voided": false, "is_refunded": false, "is_3d_secure": false, "integration_id": 3823371, "profile_id": 791483, "has_parent_transaction": false, "order": {"id": 127319262, "created_at": "2023-06-06T18:47:35.365771", "delivery_needed": false, "merchant": {"id": 791483, "created_at": "2023-05-18T13:09:45.984324", "phones": ["+201126909842"], "company_emails": ["SohilaWahed@gmail.com"], "company_name": "Sohila Wahed", "state": "", "country": "EGY", "city": "Cairo", "postal_code": "", "street": ""}, "collector": null, "amount_cents": 100, "shipping_data": {"id": 62565511, "first_name": "Clifford", "last_name": "Nicolas", "street": "NA", "building": "NA", "floor": "NA", "apartment": "NA", "city": "NA", "state": "NA", "country": "NA", "email": "claudette09@exa.com", "phone_number": "+86(8)9135210487", "postal_code": "NA", "extra_description": "", "shipping_method": "UNK", "order_id": 127319262, "order": 127319262}, "currency": "EGP", "is_payment_locked": true, "is_return": false, "is_cancel": false, "is_returned": false, "is_canceled": false, "merchant_order_id": null, "wallet_notification": null, "paid_amount_cents": 0, "notify_user_with_email": false, "items": [], "order_url": "https://accept.paymob.com/standalone/?ref=i_LRR2MEVjS2I4SWUxZWx5SlVzVVdnOC83dz09X3QrOGU1VldWOENMeGhPRUhkd2swVkE9PQ", "commission_fees": 0, "delivery_fees_cents": 0, "delivery_vat_cents": 0, "payment_method": "tbc", "merchant_staff_tag": null, "api_source": "OTHER", "data": {}}, "created_at": "2023-06-06T18:53:44.942433", "transaction_processed_callback_responses": [], "currency": "EGP", "source_data": {"type": "card", "pan": "2346", "sub_type": "MasterCard", "tenure": null}, "api_source": "IFRAME", "terminal_id": null, "merchant_commission": 0, "installment": null, "discount_details": [], "is_void": false, "is_refund": false, "data": {}, "is_hidden": false, "payment_key_claims": {"user_id": 1370514, "amount_cents": 100, "currency": "EGP", "integration_id": 3823371, "order_id": 127319262, "billing_data": {"first_name": "Clifford", "last_name": "Nicolas", "street": "NA", "building": "NA", "floor": "NA", "apartment": "NA", "city": "NA", "state": "NA", "country": "NA", "email": "claudette09@exa.com", "phone_number": "+86(8)9135210487", "postal_code": "NA", "extra_description": "NA"}, "lock_order_when_paid": false, "extra": {}, "single_payment_attempt": false, "exp": 1686070056, "pmk_ip": "156.223.85.218"}, "error_occured": false, "is_live": false, "other_endpoint_reference": null, "refunded_amount_cents": 0, "source_id": -1, "is_captured": false, "captured_amount": 0, "merchant_staff_tag": null, "updated_at": "2023-06-06T18:53:45.097903", "is_settled": false, "bill_balanced": false, "is_bill": false, "owner": 1370514, "parent_transaction": null}
-
-  const hmac = data.hmac;
+  const Request = {...req.body}
+  const data = Request.obj
+  const hmac = req.query.hmac;
 
   const sortedArray = Object.entries(data).sort();
-
   const sortedData = Object.fromEntries(sortedArray);
 
   const array = [
@@ -158,9 +153,7 @@ exports.callback = async (request, response)=> {
     'order',
     'owner',
     'pending',
-    'source_data_pan',
-    'source_data_sub_type',
-    'source_data_type',
+    'source_data',
     'success',
   ];
 
@@ -168,30 +161,39 @@ exports.callback = async (request, response)=> {
 
   Object.keys(sortedData).forEach(function(key) {
     if (array.includes(key)) {
-      //console.log("The Key Is " + key)
       if(key == 'order'){
          connectedString += sortedData.order.id
+      }else if(key == 'source_data'){
+        connectedString += sortedData.source_data.pan
+        connectedString += sortedData.source_data.sub_type
+        connectedString += sortedData.source_data.type
       }else{
         connectedString += sortedData[key];
-      } 
-      //console.log(connectedString)  
+      }  
     }
   })
 
-  console.log(connectedString)
-
   const secret = process.env.PAYMOB_HMAC;
 
-  const hashed = crypto.createHmac('sha512', secret).update(connectedString).digest('hex');
-  
+  const hashed = crypto.createHmac('SHA512', secret).update(connectedString).digest('hex');
+
+  const email = sortedData.order.shipping_data.email
+
   if (hashed === hmac) {
- 
-    response.send('secure');
+
+    const user = await User.findOneAndUpdate({email:email},{ isPaid: true, paidTime: Date.now() },
+    { runValidators: true, new: true })
+
+    if(!user){
+      return next(" no user with this email ",404)
+    }
+
+    res.send('secure');
 
     return;
   }
-  response.send('not secure');
-}
+    res.send('not secure');
+})
 
 
 exports.initiateWallet =  async (req, res)=> {

@@ -14,6 +14,7 @@ const postRouter = require('./Routes/postRouter');
 const chatRouter = require('./Routes/chatRoutes');
 const paymentRouter = require('./Routes/paymentRoutes');
 const messageRouter = require('./Routes/messageRoutes');
+const adminRouter = require('./Routes/adminRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 const app = express();
 
@@ -108,6 +109,7 @@ app.use('/api/v1/posts', postRouter);
 app.use('/api/v1/chats', chatRouter);
 app.use('/api/v1/messages', messageRouter);
 app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/admin', adminRouter);
 app.all('*', (req, res, next) => {
   // const err = new Error(`Can't find the url ${req.originalUrl} on this server`);
   // err.status='fail';

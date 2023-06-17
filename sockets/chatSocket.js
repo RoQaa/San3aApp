@@ -1,45 +1,44 @@
-module.exports = io => {
+module.exports = (io) => {
   io.on('connection', (socket) => {
- 
-    const connectedUsers = []
-    connectedUsers[socket.id] = { username: 'Guest', status: 'online' };
-    console.log(connectedUsers)
-    
-    io.emit('user list update', connectedUsers);
-  
-    // Listen for a disconnection event from the client
-    socket.on('disconnect', () => {
-      connectedUsers[socket.id].status = 'offline';
-      //console.log(connectedUsers)
-      io.emit('user list update', connectedUsers);
-      delete connectedUsers[socket.id];
-      console.log('User disconnected:', socket.id);
+    console.log('connected to server');
+
+    //login in APP
+    const clients = [];
+    socket.on('login', (user) => {
+      clients[user] = socket.id;
     });
-  
+
+    // review
+    socket.on('review', (users) => {
+      io.to(clients[users.recieveId]).emit('review', `You take review from ${users.senderName}`);
+    });
+
+    //delete post
+    socket.on('deletePost', (postId) => {
+      io.to(socket.id).emit('deletePost', postId);
+    });
+
     // Join a chat room
-    const chatRooms = []
+    const chatRooms = [];
     socket.on('join', (chatId) => {
       socket.join(chatId);
       chatRooms[chatId] = chatRooms[chatId] || [];
       chatRooms[chatId].push(socket.id);
-      console.log(chatRooms)
-      console.log(`User ${socket.id} joined room ${chatId}`);
+      console.log(chatRooms);
+      console.log(`User ${socket.id} join room ${chatId}`);
     });
-    
+
     // Listen for a message from the client
-    socket.on('chat message', (message) => {
-      // Send the message to all sockets in the room
-      console.log(message.chat)
-      io.to(message.chat).emit('chat message', {content: message.content, time: message.time});
-      
+    socket.on('msg', (msg) => {
+      console.log('chat from client side : ' + msg.chat);
+      console.log('content from client side : ' + msg.content);
+      io.to(msg.chat)
+        .except(socket.id)
+        .emit('res', { content: msg.content, time: msg.time });
+    });
+
+    socket.on('disconnect', () => {
+      console.log('User disconnected:', socket.id);
+    });
   });
-    
-    // //Leave a chat room
-    // socket.on('leave', (room) => {
-    //   socket.leave(room);
-    //   chatRooms[room] = chatRooms[room].filter((id) => id !== socket.id);
-    //   console.log(`User ${socket.id} left room ${room}`);
-    // });
-  
-  });    
-}
+};

@@ -12,18 +12,6 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.DeleteUser = catchAsync(async (req, res, next) => {
-  const deletedUser = await User.findByIdAndDelete(req.params.id);
-  res.status(202).json({
-    status: 'Success',
-    requestTime: req.requestTime,
-    data: deletedUser,
-  });
-  if (!deletedUser) {
-    return next(new AppError('Erorr user not found', 404));
-  }
-});
-
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   // const users=await User.aggregate([
   //   {

@@ -19,7 +19,7 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
     req.body.image = await uploadImage(file.tempFilePath);
   }
   if (!req?.files?.image) {
-    req.body.image = null;
+    req.body.image = nul;
   }
     
   const now = new Date();
@@ -238,7 +238,7 @@ exports.deleteMessagesAndChat = catchAsync(async(req,res,next)=>{
   }
   const messages =  await Message.deleteMany({chat: req.body.chatId})
   if(!messages){
-    return next("No Messages deleted",404)
+    return next(new AppError("No Messages deleted",404))
   }
   res.status(200).json({
     status:"status",

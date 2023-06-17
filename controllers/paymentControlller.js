@@ -134,8 +134,8 @@ exports.callback = async (req, res)=> {
   // const data2 = fs.readFileSync('./test'); 
   // const data = JSON.parse(data2)
 
-  const request = req.body
-  const data = request[0]
+  const data = req.body
+  //const data = request[0]
   console.log("obj" + data)
 
   const hmac = process.env.PAYMOB_HMAC;

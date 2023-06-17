@@ -130,14 +130,12 @@ exports.callback = async (req, res)=> {
 
   const Request = {...req.body}
   const data = Request.obj
-  console.log("obj" + data)
-
   const hmac = req.query.hmac;
 
   const sortedArray = Object.entries(data).sort();
-
   const sortedData = Object.fromEntries(sortedArray);
 
+  console.log(sortedData)
   const array = [
     'amount_cents',
     'created_at',
@@ -155,9 +153,7 @@ exports.callback = async (req, res)=> {
     'order',
     'owner',
     'pending',
-    'source_data_pan',
-    'source_data_sub_type',
-    'source_data_type',
+    'source_data',
     'success',
   ];
 
@@ -165,17 +161,15 @@ exports.callback = async (req, res)=> {
 
   Object.keys(sortedData).forEach(function(key) {
     if (array.includes(key)) {
-      //console.log("The Key Is " + key)
       if(key == 'order'){
          connectedString += sortedData.order.id
       }else if(key == 'source_data'){
         connectedString += sortedData.source_data.pan
         connectedString += sortedData.source_data.type
-        connectedString += sortedData.source_data.susub_type
+        connectedString += sortedData.source_data.sub_type
       }else{
         connectedString += sortedData[key];
-      } 
-      //console.log(connectedString)  
+      }  
     }
   })
 

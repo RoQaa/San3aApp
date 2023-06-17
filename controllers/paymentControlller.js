@@ -177,7 +177,7 @@ exports.callback = async (req, res)=> {
 
   const secret = process.env.PAYMOB_HMAC;
 
-  const hashed = crypto.createHmac('sha512', secret).update(connectedString).digest('hex');
+  const hashed = crypto.createHmac('SHA512', secret).update(connectedString).digest('hex');
 
   console.log("hashed "+ hashed)
   console.log("hmac "+ hmac)

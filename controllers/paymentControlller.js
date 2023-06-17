@@ -168,6 +168,10 @@ exports.callback = async (req, res)=> {
       //console.log("The Key Is " + key)
       if(key == 'order'){
          connectedString += sortedData.order.id
+      }else if(key == 'source_data'){
+        connectedString += sortedData.source_data.pan
+        connectedString += sortedData.source_data.type
+        connectedString += sortedData.source_data.susub_type
       }else{
         connectedString += sortedData[key];
       } 

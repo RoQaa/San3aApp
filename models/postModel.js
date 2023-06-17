@@ -10,10 +10,7 @@ const postSchema=mongoose.Schema({
     description:{
         type:String,
     },
-    image:{
-        type:String,
-       
-    },
+    image:[String],
     Activity:{
         type:Boolean,
         default:true

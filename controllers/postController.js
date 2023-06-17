@@ -2,6 +2,7 @@ const Post = require('./../models/postModel');
 const User = require('./../models/userModel');
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
+
 const uploadImage = require('../utils/uploadImage');
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -18,12 +19,25 @@ exports.addPost = catchAsync(async (req, res, next) => {
   }
 
   if (req?.files?.image) {
-    const file = req.files.image;
+    const files = req.files.image;
 
-    req.body.image = await uploadImage(file.tempFilePath);
+    if(files.length===undefined){
+      req.body.image = [await uploadImage(files.tempFilePath)];
+    }else{
+
+    const imagesToCloudinary = files.map ( data => {
+      // missing return statement
+      return uploadImage(data.tempFilePath);
+   });
+   let imageResponses = await Promise.all(imagesToCloudinary);
+
+  req.body.image=imageResponses.slice(); // like push in array
+   
+    // req.body.image = await uploadImage(file.tempFilePath);
+  }
   }
   if (!req?.files?.image) {
-    req.body.image = null;
+    req.body.image = [];
   }
   req.body.user = user;
   const newPost = await Post.create(req.body);
@@ -119,9 +133,22 @@ exports.updatePost = catchAsync(async (req, res, next) => {
     return next(new AppError("u don't have access to this operation",401));
   }
   if (req?.files?.image) {
-    const file = req.files.image;
+    const files = req.files.image;
 
-    req.body.image = await uploadImage(file.tempFilePath);
+    if(files.length===undefined){
+      req.body.image = [await uploadImage(files.tempFilePath)];
+    }else{
+
+    const imagesToCloudinary = files.map ( data => {
+      // missing return statement
+      return uploadImage(data.tempFilePath);
+   });
+   let imageResponses = await Promise.all(imagesToCloudinary);
+
+  req.body.image=imageResponses.slice(); // like push in array
+   
+    // req.body.image = await uploadImage(file.tempFilePath);
+  }
   }
   const filterBody = filterObj(req.body, 'image', 'description');
   const post = await Post.findByIdAndUpdate(req.body.postId, filterBody, {

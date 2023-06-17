@@ -1,12 +1,12 @@
 const User = require('../models/userModel');
-const HelpMe = require('../models/helpMe');
+const HelpMe = require('../models/helpMeModel');
 const ReportPost = require('../models/reportPostModel');
 const { catchAsync } = require('../utils/catchAsync');
 const AppError = require(`../utils/appError`);
 
 exports.getAllReportPost = catchAsync(async (req, res, next) => {
   const AllReportPost = await ReportPost.find()
-    .sort({reportedAt:1})
+    .sort({ reportedAt: 1 })
     .populate({
       path: 'postId',
       select: '-updatedAt',
@@ -40,3 +40,45 @@ exports.deleteReportPost = catchAsync(async (req, res, next) => {
     message: 'ReportPost deleted Sucessfully',
   });
 });
+
+exports.DeleteClient = catchAsync(async (req, res, next) => {
+  const deletedClient = await User.findByIdAndDelete(req.body.userId);
+
+  if (!deletedClient) {
+    return next(new AppError('Erorr user not found', 404));
+  }
+
+  res.status(200).json({
+    status: 'true',
+    message: 'Client deleted Sucessfully',
+  });
+});
+
+// exports.paidUsers = catchAsync(async (req, res, next) => {
+//   const paidUsers = User.find({ isPaid: true }).select(' name photo job');
+
+//   if (!paidUsers) {
+//     return next(new AppError('Sorry, cannot send paidUser ', 404));
+//   }
+
+//   res.status(200).json({
+//     status: 'true',
+//     message: 'paidUsers send Sucessfully',
+//     data: paidUsers,
+//   });
+// });
+
+// exports.unPaidUsers = catchAsync(async (req, res, next) => {
+//   const unPaidUsers = User.find({isPaid: false }).select(' name photo job');
+
+//   if (!unPaidUsers) {
+//     return next(new AppError('Sorry, cannot send unPaidUser', 404));
+//   }
+
+//   res.status(200).json({
+//     status: 'true',
+//     message: 'unPaidUsers send Sucessfully',
+//     data: unPaidUsers,
+//   });
+// });
+

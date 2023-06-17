@@ -16,8 +16,17 @@ mongoose.connect(DB,{
      console.log("DB connection Successfully");
   });
 
-  //const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8'));
-
+  const data = JSON.parse(fs.readFileSync(`./data/workers.json`,'utf-8'));
+const addWorkers=async()=>{
+  try{
+    await User.create(data);
+    console.log("data loaded successfully");
+    process.exit();
+  }
+  catch(err){
+    console.log(err);
+}
+} 
   const addPosts= async() => {
     try{
       await  Post.create()
@@ -54,6 +63,7 @@ const deletedChats=async()=>{
  // console.log(process.argv);
  if(process.argv[2]==="--import"){
   //addPosts();
+  addWorkers();
 
  };
  if(process.argv[2]==="--delete"){

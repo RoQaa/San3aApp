@@ -132,7 +132,7 @@ exports.callback = async (req, res)=> {
   const data = Request.obj
   console.log("obj" + data)
 
-  const hmac = process.env.PAYMOB_HMAC;
+  const hmac = req.query.hmac;
 
   const sortedArray = Object.entries(data).sort();
 

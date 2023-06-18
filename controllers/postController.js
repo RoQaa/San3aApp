@@ -159,7 +159,18 @@ exports.updatePost = catchAsync(async (req, res, next) => {
 });
 
 exports.ReportPost = catchAsync(async (req, res, next) => {
-  const reportPost = await ReportPost.create(req.body);
+
+  const now = new Date();
+  const sendingDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  var report = {
+    postId: req.body.postId,
+    userId: req.user._id,
+    description: req.body.reason,
+    reportedAt: sendingDate
+  }
+
+  const reportPost = await ReportPost.create(report);
 
   if (!reportPost) {
     return next(new AppError("sorry, can't report on post"), 404);

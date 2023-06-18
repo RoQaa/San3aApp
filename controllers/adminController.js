@@ -14,10 +14,9 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
     })
     .populate({
       path: 'userId',
-      select: 'name email',
+      select: 'name email photo',
     });
-    console.log("********************************************88")
-  console.log(AllReportPost)  
+
   if (!AllReportPost) {
     return next(new AppError("Can't find Reports posts", 404));
   }

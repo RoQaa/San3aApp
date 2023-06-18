@@ -32,9 +32,15 @@ exports.deleteReportPost = catchAsync(async (req, res, next) => {
   const deleteReportPost = await ReportPost.findByIdAndDelete(
     req.body.reportId
   );
-
+  const deletePost = await ReportPost.findByIdAndDelete(
+    req.body.postId
+  );  
   if (!deleteReportPost) {
     return next(new AppError("Can't delete ReportPost", 404));
+  }
+
+  if (!deletePost) {
+    return next(new AppError("Can't delete Post", 404));
   }
 
   res.status(200).json({

@@ -68,7 +68,7 @@ exports.getAllHelpMe = catchAsync(async (req, res, next) => {
   .sort({ time: -1 })
     .populate({
       path: 'userId',
-      select: 'name email image',
+      select: 'name email photo',
     });
 
   if (!AllHelpMe) {

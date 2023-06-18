@@ -69,7 +69,7 @@ exports.getAllHelpMe = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    length: AllHelpMe,
+    length: AllHelpMe.length,
     status: true,
     message: 'AllHelpMe return Sucessfully',
     date: AllHelpMe,

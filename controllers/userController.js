@@ -29,7 +29,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 
 exports.getAllWorkers = catchAsync(async (req, res, next) => {
   if (!req.body.job) {
-    const users = await User.findOne({ role: 'worker' }).select(
+    const users = await User.find({ role: 'worker' }).select(
       'name photo rateAverage bio'
     );
 
@@ -40,7 +40,7 @@ exports.getAllWorkers = catchAsync(async (req, res, next) => {
     });
   }
   if (req.body.job) {
-    const users = await User.findOne({ job: req.body.job }).select(
+    const users = await User.find({ job: req.body.job }).select(
       'name photo rateAverage bio'
     );
 

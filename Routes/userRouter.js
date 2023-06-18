@@ -32,8 +32,8 @@ router.post('/updateUser', authController.protect, UpdatedUser);
 router.delete('/DeleteMe', authController.protect, deletedMe);
 router.post('/rate', AddWorkerUserRate);
 
-router.get('/workers', authController.protect, getAllWorkers);
-router.get('/users', authController.protect, getAllUsers);
+router.get('/workers', getAllWorkers);
+router.get('/users', getAllUsers);
 
 router.route('/:id').get(GetUser).patch(UpdatedUser);
 

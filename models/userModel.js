@@ -95,12 +95,10 @@ const userSchema = new mongoose.Schema(
     },
     job: {
       type: String,
-      default: null,
-      //enum:[]
+      default: "",
     },
     photo_id: {
       type: String,
-      //required:true
     },
     isPaid: {
       type: Boolean,
@@ -115,8 +113,6 @@ const userSchema = new mongoose.Schema(
     paidTime: {
       type: Date,
     },
-
-    // token:String
   },
   {
     timestamps: true,

@@ -16,6 +16,8 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
       path: 'userId',
       select: 'name email',
     });
+    console.log("********************************************88")
+  console.log(AllReportPost)  
   if (!AllReportPost) {
     return next(new AppError("Can't find Reports posts", 404));
   }
@@ -58,7 +60,7 @@ exports.DeleteClient = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    status: 'true',
+    status: true,
     message: 'Client deleted Sucessfully',
   });
 });
@@ -99,31 +101,33 @@ exports.deleteHelpMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// exports.paidUsers = catchAsync(async (req, res, next) => {
-//   const paidUsers = User.find({ isPaid: true }).select(' name photo job');
+exports.paidUsers = catchAsync(async (req, res, next) => {
+  const paidUsers = await User.find({ isPaid: true }).select(' name photo job');
 
-//   if (!paidUsers) {
-//     return next(new AppError('Sorry, cannot send paidUser ', 404));
-//   }
+  if (!paidUsers) {
+    return next(new AppError('Sorry, cannot send paidUser ', 404));
+  }
 
-//   res.status(200).json({
-//     status: 'true',
-//     message: 'paidUsers send Sucessfully',
-//     data: paidUsers,
-//   });
-// });
+  res.status(200).json({
+    length: paidUsers.length,
+    status: true,
+    message: 'paidUsers send Sucessfully',
+    date: paidUsers,
+  });
+});
 
-// exports.unPaidUsers = catchAsync(async (req, res, next) => {
-//   const unPaidUsers = User.find({isPaid: false }).select(' name photo job');
+exports.unPaidUsers = catchAsync(async (req, res, next) => {
+  const unPaidUsers =  await User.find({isPaid: false }).select(' name photo job');
+  
+  if (!unPaidUsers) {
+    return next(new AppError('Sorry, cannot send unPaidUser', 404));
+  }
 
-//   if (!unPaidUsers) {
-//     return next(new AppError('Sorry, cannot send unPaidUser', 404));
-//   }
-
-//   res.status(200).json({
-//     status: 'true',
-//     message: 'unPaidUsers send Sucessfully',
-//     data: unPaidUsers,
-//   });
-// });
+  res.status(200).json({
+    length: unPaidUsers.length,
+    status: true,
+    message: 'unPaidUsers send Sucessfully',
+    data: unPaidUsers,
+  });
+});
 

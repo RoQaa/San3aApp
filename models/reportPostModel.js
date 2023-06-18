@@ -10,10 +10,7 @@ const reportPostSchema = mongoose.Schema({
     ref: 'User',
   },
   description: String,
-  reportedAt: {
-    type: Date,
-    default: Date.now
-  }
+  reportedAt: String
 });
 
 const ReportPost = mongoose.model('ReportPost', reportPostSchema);

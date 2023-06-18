@@ -11,7 +11,7 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
   }
 
   if(!req.body.text){
-    req.body.text = null
+    req.body.text = ""
   }
 
   if(req?.files?.image){
@@ -19,7 +19,7 @@ exports.sendMessage = catchAsync(async(req, res, next)=>{
     req.body.image = await uploadImage(file.tempFilePath);
   }
   if (!req?.files?.image) {
-    req.body.image = nul;
+    req.body.image = "";
   }
     
   const now = new Date();

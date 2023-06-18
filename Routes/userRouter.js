@@ -3,10 +3,10 @@ const {
   getAllUsers,
   GetUser,
   UpdatedUser,
-  DeleteUser,
   deletedMe,
   getAllWorkers,
   AddWorkerUserRate,
+  helpMe,
 } = require(`${__dirname}/../controllers/userController`);
 const authController = require(`${__dirname}/../controllers/authController`);
 const router = express.Router();
@@ -18,6 +18,7 @@ router.post('/CheckEmailOrPhone', authController.CheckEmailOrPhone);
 router.post('/verifyEmailOtp', authController.verifyEmailOtp);
 router.post('/verifyPhoneOtp', authController.verifyPhoneOtp);
 router.post('/logout', authController.protect, authController.logOut);
+
 router.post(
   '/resetpassword',
   authController.protect,
@@ -29,11 +30,12 @@ router.post(
   authController.updatePassword
 );
 router.post('/updateUser', authController.protect, UpdatedUser);
-router.delete('/DeleteMe', authController.protect, deletedMe);
-router.post('/rate', authController.protect,AddWorkerUserRate);
+router.post('/DeleteMe', authController.protect, deletedMe);
+router.post('/helpMe', authController.protect, helpMe );
+router.post('/rate', AddWorkerUserRate);
 
-router.get('/workers', getAllWorkers);
-router.get('/users', getAllUsers);
+router.get('/workers',authController.protect ,getAllWorkers);
+router.get('/users', authController.protect,getAllUsers);
 
 router.route('/:id').get(GetUser).patch(UpdatedUser);
 

@@ -6,7 +6,8 @@ const helpMeSchema = mongoose.Schema({
     ref: 'User',
   },
   description: String,
-  image: String,
+  image: [String],
+  Date: String
 });
 
 const HelpMe = mongoose.model('HelpMe', helpMeSchema);

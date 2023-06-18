@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Post = require('../models/postModel');
 const HelpMe = require('../models/helpMeModel');
 const ReportPost = require('../models/reportPostModel');
 const { catchAsync } = require('../utils/catchAsync');
@@ -6,7 +7,7 @@ const AppError = require(`../utils/appError`);
 
 exports.getAllReportPost = catchAsync(async (req, res, next) => {
   const AllReportPost = await ReportPost.find()
-    .sort({ reportedAt: 1 })
+    .sort({ reportedAt: -1 })
     .populate({
       path: 'postId',
       select: '-updatedAt',
@@ -20,6 +21,7 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
+    length: AllReportPost.length,
     status: true,
     message: 'AllReportPost return Sucessfully',
     date: AllReportPost,
@@ -27,12 +29,19 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteReportPost = catchAsync(async (req, res, next) => {
-  const deleteReportPost = await ReportPost.findByIdAndDelete(
-    req.body.reportId
-  );
+  
+  const deletePost = await Post.findByIdAndDelete(
+    req.body.postId
+  ); 
 
+  const deleteReportPost = await ReportPost.deleteMany({postId: req.body.postId})
+ 
   if (!deleteReportPost) {
     return next(new AppError("Can't delete ReportPost", 404));
+  }
+
+  if (!deletePost) {
+    return next(new AppError("Can't delete Post", 404));
   }
 
   res.status(200).json({
@@ -51,6 +60,42 @@ exports.DeleteClient = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'true',
     message: 'Client deleted Sucessfully',
+  });
+});
+
+exports.getAllHelpMe = catchAsync(async (req, res, next) => {
+  const AllHelpMe = await HelpMe.find()
+  .sort({ time: -1 })
+    .populate({
+      path: 'userId',
+      select: 'name email photo',
+    });
+
+  if (!AllHelpMe) {
+    return next(new AppError("Can't find HelpMe ", 404));
+  }
+
+  res.status(200).json({
+    length: AllHelpMe.length,
+    status: true,
+    message: 'AllHelpMe return Sucessfully',
+    date: AllHelpMe,
+  });
+});
+
+exports.deleteHelpMe = catchAsync(async (req, res, next) => {
+
+  const deleteHelpMe = await HelpMe.findByIdAndDelete(
+    req.body.helpMeId
+  );
+
+  if (!deleteHelpMe) {
+    return next(new AppError("Can't delete helpMe", 404));
+  }
+
+  res.status(200).json({
+    status: true,
+    message: 'helpMe deleted Sucessfully',
   });
 });
 

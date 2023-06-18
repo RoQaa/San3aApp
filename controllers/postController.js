@@ -3,7 +3,6 @@ const User = require('./../models/userModel');
 const ReportPost = require('../models/reportPostModel');
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
-
 const uploadImage = require('../utils/uploadImage');
 
 const filterObj = (obj, ...allowedFields) => {
@@ -24,20 +23,19 @@ exports.addPost = catchAsync(async (req, res, next) => {
   if (req?.files?.image) {
     const files = req.files.image;
 
-    if(files.length===undefined){
+    if (files.length === undefined) {
       req.body.image = [await uploadImage(files.tempFilePath)];
-    }else{
+    } else {
+      const imagesToCloudinary = files.map((data) => {
+        // missing return statement
+        return uploadImage(data.tempFilePath);
+      });
+      let imageResponses = await Promise.all(imagesToCloudinary);
 
-    const imagesToCloudinary = files.map ( data => {
-      // missing return statement
-      return uploadImage(data.tempFilePath);
-   });
-   let imageResponses = await Promise.all(imagesToCloudinary);
+      req.body.image = imageResponses.slice(); // like push in array
 
-  req.body.image=imageResponses.slice(); // like push in array
-   
-    // req.body.image = await uploadImage(file.tempFilePath);
-  }
+      // req.body.image = await uploadImage(file.tempFilePath);
+    }
   }
   if (!req?.files?.image) {
     req.body.image = [];
@@ -129,20 +127,19 @@ exports.updatePost = catchAsync(async (req, res, next) => {
   if (req?.files?.image) {
     const files = req.files.image;
 
-    if(files.length===undefined){
+    if (files.length === undefined) {
       req.body.image = [await uploadImage(files.tempFilePath)];
-    }else{
+    } else {
+      const imagesToCloudinary = files.map((data) => {
+        // missing return statement
+        return uploadImage(data.tempFilePath);
+      });
+      let imageResponses = await Promise.all(imagesToCloudinary);
 
-    const imagesToCloudinary = files.map ( data => {
-      // missing return statement
-      return uploadImage(data.tempFilePath);
-   });
-   let imageResponses = await Promise.all(imagesToCloudinary);
+      req.body.image = imageResponses.slice(); // like push in array
 
-  req.body.image=imageResponses.slice(); // like push in array
-   
-    // req.body.image = await uploadImage(file.tempFilePath);
-  }
+      // req.body.image = await uploadImage(file.tempFilePath);
+    }
   }
   const filterBody = filterObj(req.body, 'image', 'description');
   const post = await Post.findByIdAndUpdate(req.body.postId, filterBody, {
@@ -159,16 +156,19 @@ exports.updatePost = catchAsync(async (req, res, next) => {
 });
 
 exports.ReportPost = catchAsync(async (req, res, next) => {
-
   const now = new Date();
-  const sendingDate = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const sendingDate = now.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   var report = {
     postId: req.body.postId,
     userId: req.user._id,
     description: req.body.reason,
-    reportedAt: sendingDate
-  }
+    reportedAt: sendingDate,
+  };
 
   const reportPost = await ReportPost.create(report);
 

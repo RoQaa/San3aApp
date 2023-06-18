@@ -6,7 +6,7 @@ const AppError = require(`../utils/appError`);
 
 exports.getAllReportPost = catchAsync(async (req, res, next) => {
   const AllReportPost = await ReportPost.find()
-    .sort({ reportedAt: 1 })
+    .sort({ reportedAt: -1 })
     .populate({
       path: 'postId',
       select: '-updatedAt',
@@ -27,6 +27,7 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteReportPost = catchAsync(async (req, res, next) => {
+
   const deleteReportPost = await ReportPost.findByIdAndDelete(
     req.body.reportId
   );
@@ -51,6 +52,41 @@ exports.DeleteClient = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'true',
     message: 'Client deleted Sucessfully',
+  });
+});
+
+exports.getAllHelpMe = catchAsync(async (req, res, next) => {
+  const AllHelpMe = await HelpMe.find()
+  .sort({ time: -1 })
+    .populate({
+      path: 'userId',
+      select: 'name email image',
+    });
+
+  if (!AllHelpMe) {
+    return next(new AppError("Can't find HelpMe ", 404));
+  }
+
+  res.status(200).json({
+    status: true,
+    message: 'AllHelpMe return Sucessfully',
+    date: AllHelpMe,
+  });
+});
+
+exports.deleteHelpMe = catchAsync(async (req, res, next) => {
+
+  const deleteHelpMe = await HelpMe.findByIdAndDelete(
+    req.body.helpMeId
+  );
+
+  if (!deleteHelpMe) {
+    return next(new AppError("Can't delete helpMe", 404));
+  }
+
+  res.status(200).json({
+    status: true,
+    message: 'helpMe deleted Sucessfully',
   });
 });
 

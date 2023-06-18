@@ -20,6 +20,17 @@ router.post(
   adminController.DeleteClient
 );
 
+router.get(
+  '/getAllHelpMe',
+  authController.protect,
+  adminController.getAllHelpMe
+);
+router.post(
+  '/deleteHelpMe',
+  authController.protect,
+  adminController.deleteHelpMe
+);
+
 // router.get('/paidUsers', authController.protect, adminController.paidUsers);
 // router.get('/unPaidUsers', authController.protect, adminController.unPaidUsers);
 

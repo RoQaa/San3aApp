@@ -34,6 +34,7 @@ exports.getAllWorkers = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       length: users.length,
+      message:'all workers sent successfully',
       status: true,
       data: users,
     });
@@ -103,11 +104,13 @@ exports.GetUser = catchAsync(async (req, res, next) => {
 
 exports.AddWorkerUserRate = catchAsync(async (req, res, next) => {
   //protect handler
+  const userLog=req.user;
   const rate = req.body.rate;
   const user = await User.findByIdAndUpdate(
     req.body.id,
     {
       $push: { rating: rate },
+      $push:{rates:userLog.id}
     },
     {
       new: true,

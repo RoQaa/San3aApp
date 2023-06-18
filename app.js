@@ -96,11 +96,89 @@ app.delete('/api/v1/tours/:id', DeleteTour);
 //Routes
 
 app.get('/',(req,res)=>{
-  res.status(200).json({
-   message:"Welcome to our Graduated Project",
-   ARMessage:"اهلا ومرحبا بكم في مشروع تخرجنا",
-   members:"Farouk, Sohila, Mohamed,Manar,Ahmed"
-  })
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write(`<!DOCTYPE html>
+  <html>
+  <head>
+    <title>Welcome to Our Website</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+      }
+      section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        padding: 50px;
+      }
+      .member-card {
+        background-color: #f2f2f2;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        margin: 20px;
+        padding: 20px;
+        text-align: center;
+        width: 300px;
+      }
+      .member-card img {
+        border-radius: 50%;
+        height: 150px;
+        width: 150px;
+      }
+      .member-card h2 {
+        margin-top: 20px;
+      }
+      .member-card p {
+        margin: 10px 0 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Welcome to Our Website</h1>
+    </header>
+    <section>
+      <div class="member-card">
+        <img src="https://example.com/team-member-1.jpg" alt="Team Member 1">
+        <h2>Farouk Adel</h2>
+        <p>Back-End Developer</p>
+      </div>
+      <div class="member-card">
+        <img src="https://example.com/team-member-2.jpg" alt="Team Member 2">
+        <h2>Mohammed Ahmed</h2>
+        <p>Flutter Developer</p>
+      </div>
+      <div class="member-card">
+        <img src="https://example.com/team-member-3.jpg" alt="Team Member 3">
+        <h2>Manar Adel</h2>
+        <p>Flutter Developer</p>
+      </div>
+          <div class="member-card">
+        <img src="https://example.com/team-member-3.jpg" alt="Team Member 3">
+        <h2>Sohila Wahed</h2>
+        <p>Back-End Developer</p>
+      </div>
+          <div class="member-card">
+        <img src="https://example.com/team-member-3.jpg" alt="Team Member 3">
+        <h2>Ahmed Shaban</h2>
+        <p>Flutter Developer</p>
+      </div>
+    </section>
+  </body>
+  </html>`);
+  res.end();
 })
 
 app.use('/api/v1/tours', tourRouter);

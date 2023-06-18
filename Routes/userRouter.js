@@ -30,7 +30,7 @@ router.post(
   authController.updatePassword
 );
 router.post('/updateUser', authController.protect, UpdatedUser);
-router.delete('/DeleteMe', authController.protect, deletedMe);
+router.post('/DeleteMe', authController.protect, deletedMe);
 router.post('/helpMe', authController.protect, helpMe );
 router.post('/rate', AddWorkerUserRate);
 

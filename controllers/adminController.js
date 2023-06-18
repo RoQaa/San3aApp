@@ -1,4 +1,5 @@
 const User = require('../models/userModel');
+const Post = require('../models/postModel');
 const HelpMe = require('../models/helpMeModel');
 const ReportPost = require('../models/reportPostModel');
 const { catchAsync } = require('../utils/catchAsync');
@@ -28,13 +29,13 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteReportPost = catchAsync(async (req, res, next) => {
-
-  const deleteReportPost = await ReportPost.findByIdAndDelete(
-    req.body.reportId
-  );
-  const deletePost = await ReportPost.findByIdAndDelete(
+  
+  const deletePost = await Post.findByIdAndDelete(
     req.body.postId
-  );  
+  ); 
+
+  const deleteReportPost = await ReportPost.deleteMany({postId: req.body.postId})
+ 
   if (!deleteReportPost) {
     return next(new AppError("Can't delete ReportPost", 404));
   }

@@ -101,7 +101,7 @@ exports.deleteHelpMe = catchAsync(async (req, res, next) => {
 });
 
 exports.paidUsers = catchAsync(async (req, res, next) => {
-  const paidUsers = await User.find({ isPaid: true }).select(' name photo job');
+  const paidUsers = await User.find({$or: [{role: worker},{isPaid: true }]}).select(' name photo job');
 
   if (!paidUsers) {
     return next(new AppError('Sorry, cannot send paidUser ', 404));
@@ -116,7 +116,7 @@ exports.paidUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.unPaidUsers = catchAsync(async (req, res, next) => {
-  const unPaidUsers =  await User.find({isPaid: false }).select(' name photo job');
+  const unPaidUsers =  await User.find({$or: [{role: worker},{isPaid: false }]}).select(' name photo job');
   
   if (!unPaidUsers) {
     return next(new AppError('Sorry, cannot send unPaidUser', 404));

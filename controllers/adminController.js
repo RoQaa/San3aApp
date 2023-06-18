@@ -20,7 +20,7 @@ exports.getAllReportPost = catchAsync(async (req, res, next) => {
   }
 
   res.status(200).json({
-    length: AllReportPost,
+    length: AllReportPost.length,
     status: true,
     message: 'AllReportPost return Sucessfully',
     date: AllReportPost,

@@ -84,7 +84,7 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-
+    rates:[String],
     rating: [Number],
 
     rateAverage: {

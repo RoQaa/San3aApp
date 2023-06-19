@@ -59,6 +59,7 @@ const createSendToken = (user, statusCode, message, res) => {
 };
 
 exports.SignUp = catchAsync(async (req, res, next) => {
+  console.log(req.headers.lang);
   if (req?.files?.photo) {
     const file = req.files.photo;
 
@@ -92,6 +93,13 @@ exports.SignUp = catchAsync(async (req, res, next) => {
   // })  //sign(payload,secret,options=expires)
 
   //createSendToken(newUser,201,"sign up successfully",res);
+  if  (req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'تم الاشتراك بنجاح',
+      notError: { statusCode: 200 },
+    });
+  }
   res.status(200).json({
     status: true,
     message: 'Sign up Successfully',
@@ -107,6 +115,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
+
   const { email, password } = req.body;
 
   //1) check email && password exist,
@@ -115,27 +124,30 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   const validEmail = validator.isEmail(email);
   if (!validEmail) {
-    return next(new AppError('صيغة البريد غير صحيحة'));
+    if  (req.headers.lang==='AR'){
+      return next(new AppError('صيغة البريد غير صحيحة'));
+    }
+   return next(new AppError(`Email is n't Valid`));
   }
   //2)check user exists && password is correct
   const user = await User.findOne({ email: email }).select('+password'); // hyzaod el password el m5fee aslan
 
   //const correct=await user.correctPassword(password,user.password);
 
-  if (
-    !user ||
-    !(
-      (await user.correctPassword(
-        password,
-        user.password
-      )) /** 34an hyrun fe el correct 7ta loo ml2hoo4*/
-    )
+  if (!user ||!((await user.correctPassword( password,user.password)) /** 34an hyrun fe el correct 7ta loo ml2hoo4*/)
   ) {
+    if  (req.headers.lang==='AR'){
+      return next(new AppError('البريد الالكتروني او كلمة المرور غير صحيحة'));
+    }
     return next(new AppError('Incorrect email or password', 404));
   }
   //3) if everything ok send token back to the client
-
+  if  (req.headers.lang==='AR'){
+    createSendToken(user, 200, 'تم التسجيل الدخول بنجاح', res);
+  }
+  else{
   createSendToken(user, 200, 'log in successfully', res);
+  }
   // const token=signToken(user._id);
 
   // res.status(200).json({

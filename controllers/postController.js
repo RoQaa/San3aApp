@@ -17,7 +17,7 @@ exports.addPost = catchAsync(async (req, res, next) => {
   //protect handler
   const user = req.user._id;
   if (!user) {
-    return next(new AppError('Please log in first', 404));
+    return next(new AppError(`There's no user with that id`, 404));
   }
 
   if (req?.files?.image) {
@@ -42,10 +42,16 @@ exports.addPost = catchAsync(async (req, res, next) => {
   }
   req.body.user = user;
   const newPost = await Post.create(req.body);
+  if(req.headers.lang){res.status(200).json({
+    status: true,
+    message: 'تم انشاء المنشور',
+  });
+}else{
   res.status(200).json({
     status: true,
     message: 'Post Created Sucessfully',
   });
+}
 });
 
 exports.getPosts = catchAsync(async (req, res, next) => {
@@ -111,10 +117,16 @@ exports.deletePost = catchAsync(async (req, res, next) => {
   if (!deletePost) {
     return next(new AppError('No post found with that ID', 404));
   }
+  if(req.headers.lang==='AR'){  res.status(200).json({
+    status: true,
+    message: 'تم حذف المنشور',
+  });}
+  else{
   res.status(200).json({
     status: true,
     message: 'Deleted sucessfully',
   });
+}
 });
 
 exports.updatePost = catchAsync(async (req, res, next) => {
@@ -149,10 +161,13 @@ exports.updatePost = catchAsync(async (req, res, next) => {
   if (!post) {
     return next(new AppError("there's no post with that id ", 404));
   }
+  if(req.headers.lang==='AR'){res.status(200).json({status:true,message:'تم تعديل المنشور'})}
+  else{
   res.status(200).json({
     status: true,
     message: 'post updated Successfully',
   });
+}
 });
 
 exports.ReportPost = catchAsync(async (req, res, next) => {
@@ -175,11 +190,18 @@ exports.ReportPost = catchAsync(async (req, res, next) => {
   if (!reportPost) {
     return next(new AppError("sorry, can't report on post"), 404);
   }
-
+if(req.headers.lang==='AR'){
+  res.status(200).json({
+    status:true,
+    message:"تم اضافة التقرير"
+  })
+}
+else{
   res.status(200).json({
     status: true,
     message: 'Post reported Sucessfully',
   });
+}
 });
 
 exports.AddSavedPost = catchAsync(async (req, res, next) => {
@@ -194,10 +216,18 @@ exports.AddSavedPost = catchAsync(async (req, res, next) => {
   if (!addSavedPost) {
     return next(new AppError("there's no post to add"), 404);
   }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'تم حفظ المنشور',
+    });
+  }
+  else{
   res.status(200).json({
     status: true,
     message: 'Post Saved Successfully',
   });
+}
 });
 
 exports.getSavedPosts = catchAsync(async (req, res, next) => {
@@ -244,12 +274,22 @@ exports.getSavedPosts = catchAsync(async (req, res, next) => {
   if (AllSavedPosts.length === 0) {
     return next(new AppError("There's no Saved Posts"), 404);
   }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+    length: AllSavedPosts.length,
+    message: 'تم استرجاع المنشورات المحفوظة',
+    data: AllSavedPosts,
+    })
+  }
+  else{
   res.status(200).json({
     status: true,
     length: AllSavedPosts.length,
     message: 'saved Posts returned Successfully',
     data: AllSavedPosts,
   });
+}
 });
 
 exports.getPostById = catchAsync(async (req, res, next) => {
@@ -257,11 +297,19 @@ exports.getPostById = catchAsync(async (req, res, next) => {
   if (!post) {
     return next(new AppError("there's no post with that id", 404));
   }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status:true,
+      message:'تمت العملية',
+      data: post,
+    })
+  }else{
   res.status(200).json({
     status: true,
     message: 'Post Returned Sucessed',
     data: post,
   });
+}
 });
 
 exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
@@ -273,10 +321,17 @@ exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
   if (!deletePost) {
     return next(new AppError("there's no post to deleted", 404));
   }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'تم حذف المنشور',
+  })}
+  else{
   res.status(200).json({
     status: true,
     message: 'Post Deleted Successfully',
   });
+}
 });
 
 exports.getProfilePage = catchAsync(async (req, res, next) => {

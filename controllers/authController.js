@@ -59,7 +59,7 @@ const createSendToken = (user, statusCode, message, res) => {
 };
 
 exports.SignUp = catchAsync(async (req, res, next) => {
-  console.log(req.headers.lang);
+  
   if (req?.files?.photo) {
     const file = req.files.photo;
 
@@ -93,18 +93,20 @@ exports.SignUp = catchAsync(async (req, res, next) => {
   // })  //sign(payload,secret,options=expires)
 
   //createSendToken(newUser,201,"sign up successfully",res);
-  if  (req.headers.lang==='AR'){
+  if(req.headers.lang==='AR'){
     res.status(200).json({
       status: true,
       message: 'تم الاشتراك بنجاح',
       notError: { statusCode: 200 },
     });
   }
+  else{
   res.status(200).json({
     status: true,
     message: 'Sign up Successfully',
     notError: { statusCode: 200 },
   });
+}
   // const token=signToken(newUser._id);
 
   // res.status(201).json({
@@ -124,7 +126,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   const validEmail = validator.isEmail(email);
   if (!validEmail) {
-    if  (req.headers.lang==='AR'){
+    if(req.headers.lang==='AR'){
       return next(new AppError('صيغة البريد غير صحيحة'));
     }
    return next(new AppError(`Email is n't Valid`));
@@ -136,13 +138,13 @@ exports.login = catchAsync(async (req, res, next) => {
 
   if (!user ||!((await user.correctPassword( password,user.password)) /** 34an hyrun fe el correct 7ta loo ml2hoo4*/)
   ) {
-    if  (req.headers.lang==='AR'){
+    if(req.headers.lang==='AR'){
       return next(new AppError('البريد الالكتروني او كلمة المرور غير صحيحة'));
     }
     return next(new AppError('Incorrect email or password', 404));
   }
   //3) if everything ok send token back to the client
-  if  (req.headers.lang==='AR'){
+  if(req.headers.lang==='AR'){
     createSendToken(user, 200, 'تم التسجيل الدخول بنجاح', res);
   }
   else{
@@ -161,6 +163,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   //1)Getting token and check it's there
   let token;
   if (req.headers.authorization === 'Bearer null') {
+    if(req.headers.lang==='AR'){
+      return next(new AppError("برجاء تسجيل الدخول اولا", 401));
+    }
     return next(new AppError("Your're not logged in please log in", 401));
   }
   if (
@@ -171,6 +176,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   if (!token) {
+    if(req.headers.lang==='AR'){
+      return next(new AppError("برجاء تسجيل الدخول اولا", 401));
+    }
     return next(new AppError("Your're not logged in please log in", 404)); //401 => is not 'authorized
   }
   //2)Verification token
@@ -179,6 +187,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   //3)check if user still exist in the route
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
+    if(req.headers.lang==='AR'){
+      return next(new AppError("لا يوجد مستخدم لهذا التشفير", 401));
+    }
     return next(
       new AppError(`user belonging to this token doesn't exist`, 401)
     );
@@ -186,6 +197,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   //4)check if user changed password after the token has issued
   if (currentUser.changesPasswordAfter(decoded.iat)) {
     //iat=> issued at
+    if(req.headers.lang==='AR'){
+      return next(new AppError("لقد تم تغيير كلمة المرور برجاء تسجيل الدخول", 401));
+    }
     return next(
       new AppError(
         'user has changed password recently please log in again',
@@ -208,6 +222,7 @@ exports.restrictTo = (...roles) => {
   //roles ['admin','lead-guide']
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
+      
       return next(
         new AppError('You do not have permission to preform this action', 403)
       );
@@ -221,20 +236,35 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     'email phone'
   );
   if (!user) {
+    if(req.headers.lang==='AR'){
+      return next(new AppError("لا يوجد حساب بذلك البريد الالكتروني", 404));
+    }
     return next(new AppError('There is no user with email address.', 404));
   }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'تمت العملية',
+      data: user,
+  })
+}
   // createSendToken(user,200,"email founded",res);
+  else{
   res.status(200).json({
     status: true,
-    message: 'email Found',
+    message: 'Operation is done',
     data: user,
   });
+}
 });
 
 exports.CheckEmailOrPhone = catchAsync(async (req, res, next) => {
-  if (req.body.email) {
+  if(req.body.email) {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
+      if(req.headers.lang==='AR'){
+        return next(new AppError("لا يوجد حساب بذلك البريد الالكتروني", 404));
+      }
       return next(new AppError("There's no Account with that Email"));
     }
     const OTP = await user.generateOtp();
@@ -246,11 +276,18 @@ exports.CheckEmailOrPhone = catchAsync(async (req, res, next) => {
         name: user.name,
         otp: OTP,
       });
-
+      if(req.headers.lang==='AR'){
+        res.status(200).json({
+          status: true,
+          message: 'لقد تم ارسال الكود الخاص بك',
+        });
+      }
+      else{
       res.status(200).json({
         status: true,
-        message: 'OTP sent to email!',
+        message: 'Code sent to email!',
       });
+    }
     } catch (err) {
       user.passwordOtp = undefined;
       user.passwordOtpExpires = undefined;
@@ -269,12 +306,21 @@ exports.CheckEmailOrPhone = catchAsync(async (req, res, next) => {
           to: internationalFormat,
           channel: 'sms',
         });
+        if(req.headers.lang==='AR'){
+          res.status(200).json({
+            status: true,
+            message: 'لقد تم ارسال الكود الخاص بك',
+          });
+        }
+          else{
       res.status(200).json({
         status: true,
         message: 'OTP send successfully',
         // otp:otpResponse
-      });
-    } catch (err) {
+      })
+      };
+    }
+     catch (err) {
       return new AppError(err, 400);
     }
   }
@@ -293,14 +339,27 @@ exports.verifyEmailOtp = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
+    if(req.headers.lang==='AR'){
+      return next(new AppError('الكود اما غير صحيحة او غير صالح', 400));
+      }
+    
     return next(new AppError('OTP is invalid or has expired', 400));
   }
   const token = signToken(user.id);
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'يمكنك تغيير كلمة المرور',
+      token,
+    });
+  }
+  else{
   res.status(200).json({
     status: true,
     message: 'OTP is valid You can now reset password',
     token,
   });
+}
 });
 
 exports.verifyPhoneOtp = catchAsync(async (req, res, next) => {
@@ -315,12 +374,27 @@ exports.verifyPhoneOtp = catchAsync(async (req, res, next) => {
       code: otp,
     });
   if (verifiedResponse.valid === false) {
+    if(req.headers.lang==='AR'){
+      res.status(401).json({
+        status: false,
+        message: 'الكود غير صحيح',
+      });
+      }
+      else{
     res.status(401).json({
-      status: 'false',
+      status: false,
       message: 'invalid otp',
     });
+  }
   } else {
     const token = signToken(user.id);
+    if  (req.headers.lang==='AR'){
+      res.status(200).json({
+        status: true,
+        message: 'تم التأكيد بنجاح',
+      });
+      }
+      else{
     res.status(200).json({
       status: true,
       message: 'OTP is verified Success',
@@ -328,12 +402,15 @@ exports.verifyPhoneOtp = catchAsync(async (req, res, next) => {
       token,
     });
   }
+  }
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   // protect handler
   const user = req.user;
   if (!user) {
+    if(req.headers.lang==='AR'){return next(new AppError('التشفير غير صحيح', 400));}
+    
     return next(new AppError('Token is invalid or has expired', 400));
   }
   user.password = req.body.password;
@@ -344,12 +421,20 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordOtpExpires = undefined;
   //user.token=undefined;
   await user.save({ validateBeforeSave: false });
+  if(req.headers.lang==='AR'){
+    res.clearCookie('jwt');
+    res.status(200).json({
+    status:true,
+    message:"تم تغير كلمة المرور بنجاح"
+  })}
+  else{
+    res.clearCookie('jwt');
   res.status(200).json({
     status: true,
     message: 'password reset success you can now  try agin to log in',
   });
   //createSendToken(user,200,"password has changed successfully",res);
-});
+}});
 
 exports.resetPasswordJ = catchAsync(async (req, res, next) => {
   // 1-GET USER BASED ON TOKEN
@@ -392,6 +477,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   }
   // 2) Check if posted current password is correct
   if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    if(req.headers.lang==='AR'){ return next(new AppError("كلمة المرور الحالية غير صحيحة", 400));}
     return next(new AppError("Current password isn't correct", 400));
   }
 
@@ -401,13 +487,20 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false });
   // 4) Log user in, send JWT
+  if(req.headers.lang==='AR'){  createSendToken(
+    user,
+    200,
+    'تم تغيير كلمة المرور بنجاح برجاء تسجيل دخول مرة اخرى',
+    res
+  );}
+  else{
   createSendToken(
     user,
     200,
     'password has changed successfully, please log in again',
     res
   );
-});
+}});
 
 exports.forgotPasswordJ = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email
@@ -457,9 +550,18 @@ exports.forgotPasswordJ = catchAsync(async (req, res, next) => {
 exports.logOut = catchAsync(async (req, res, next) => {
   res.clearCookie('jwt');
   req.headers.authorization = undefined;
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status: true,
+      message: 'تم تسجيل الخروج',
+      // token:undefined
+    })
+  }
+  else{
   res.status(200).json({
     status: true,
     message: 'You log out Successfully',
     // token:undefined
-  });
+  })
+}
 });

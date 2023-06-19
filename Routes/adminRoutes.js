@@ -33,5 +33,5 @@ router.post(
 
 router.get('/paidUsers', authController.protect, adminController.paidUsers);
 router.get('/unPaidUsers', authController.protect, adminController.unPaidUsers);
-
+router.post('/HelpMeEmail',authController.protect,adminController.HelpMeEmail);
 module.exports = router;

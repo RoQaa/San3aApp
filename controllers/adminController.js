@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const Post = require('../models/postModel');
 const HelpMe = require('../models/helpMeModel');
 const ReportPost = require('../models/reportPostModel');
+const adminEmail = require('../utils/adminMail');
 const { catchAsync } = require('../utils/catchAsync');
 const AppError = require(`../utils/appError`);
 
@@ -130,3 +131,33 @@ exports.unPaidUsers = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.HelpMeEmail=catchAsync(async(req,res,next)=>{
+  // protect handler
+ const email= req.body.email;
+ const user=await User.findOne({email:email});
+ try {
+  await adminEmail({
+    email: email,
+    subject: 'User Problem',
+    name: user.name,
+    
+  });
+}
+  catch(err){
+  return next(new AppError(err,404));
+  }
+  if(req.headers.lang==='AR'){
+    res.status(200).json({
+      status:true,
+      message:"تم ارسال طلبك بنجاح"
+    })
+  }
+  else{
+  res.status(200).json({
+    status:true,
+    message:"Your Request Sent Successfully"
+  })
+}
+}
+ 
+)

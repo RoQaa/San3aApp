@@ -392,6 +392,7 @@ exports.verifyPhoneOtp = catchAsync(async (req, res, next) => {
       res.status(200).json({
         status: true,
         message: 'تم التأكيد بنجاح',
+        token
       });
       }
       else{

@@ -31,7 +31,7 @@ router.post(
   adminController.deleteHelpMe
 );
 
-// router.get('/paidUsers', authController.protect, adminController.paidUsers);
-// router.get('/unPaidUsers', authController.protect, adminController.unPaidUsers);
+router.get('/paidUsers', authController.protect, adminController.paidUsers);
+router.get('/unPaidUsers', authController.protect, adminController.unPaidUsers);
 
 module.exports = router;

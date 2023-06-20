@@ -253,7 +253,8 @@ exports.getSavedPosts = catchAsync(async (req, res, next) => {
           {
             $project: {
               name: 1,
-              //  photo:1
+              photo: 1,
+              role: 1,
             },
           },
         ],

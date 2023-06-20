@@ -14,14 +14,13 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find({ role: 'customer' })
-  .select(
+  const users = await User.find({ role: 'customer' }).select(
     'name photo rateAverage '
   );
   res.status(200).json({
-    length:users.length,
+    length: users.length,
     status: true,
-    message:'all customers sent successfully',
+    message: 'all customers sent successfully',
     data: users,
   });
 });
@@ -34,7 +33,7 @@ exports.getAllWorkers = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       length: users.length,
-      message:'all workers sent successfully',
+      message: 'all workers sent successfully',
       status: true,
       data: users,
     });
@@ -46,7 +45,7 @@ exports.getAllWorkers = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
       length: users.length,
-      message:"All worker send successfully",
+      message: 'All worker send successfully',
       status: true,
       data: users,
     });
@@ -104,7 +103,7 @@ exports.GetUser = catchAsync(async (req, res, next) => {
 
 exports.AddWorkerUserRate = catchAsync(async (req, res, next) => {
   //protect handler
-  const userLog=req.user;
+  const userLog = req.user;
   const rate = req.body.rate;
   const user = await User.findByIdAndUpdate(
     req.body.id,
@@ -131,7 +130,6 @@ exports.AddWorkerUserRate = catchAsync(async (req, res, next) => {
 });
 
 exports.helpMe = catchAsync(async (req, res, next) => {
-  
   if (!req.body.description) {
     return next(new AppError(' must declare your problem', 400));
   }
@@ -165,12 +163,12 @@ exports.helpMe = catchAsync(async (req, res, next) => {
     day: 'numeric',
   });
 
-  
+
   req.body.userId = req.user._id;
-  req.body.Date = sendingDate
+  req.body.Date = sendingDate;
 
   const helpMe = await HelpMe.create(req.body);
-  
+
   if (!helpMe) {
     return next(new AppError("Can't create HelpMe ", 404));
   }
@@ -179,5 +177,4 @@ exports.helpMe = catchAsync(async (req, res, next) => {
     status: true,
     message: 'HelpMe sent Sucessfully',
   });
-
 });

@@ -261,6 +261,9 @@ exports.getSavedPosts = catchAsync(async (req, res, next) => {
       },
     },
     {
+      $unwind: '$userData',
+    },
+    {
       $project: {
         user: 0,
         createdAt: 0,
@@ -356,7 +359,7 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
   const userData = await User.findById(user.id).select(
-    'name email  phone countryCode isPaid city birthdate role photo rateAverage bio job'
+    'name email  phone countryCode isPaid city birthdate role photo rateAverage bio j'
   );
   if (userData.role === 'customer') {
     userData.birthdate = null;

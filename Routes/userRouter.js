@@ -31,11 +31,11 @@ router.post(
 );
 router.post('/updateUser', authController.protect, UpdatedUser);
 router.post('/DeleteMe', authController.protect, deletedMe);
-router.post('/helpMe', authController.protect, helpMe );
+router.post('/helpMe', authController.protect, helpMe);
 router.post('/rate', AddWorkerUserRate);
 
-router.get('/workers',authController.protect ,getAllWorkers);
-router.get('/users', authController.protect,getAllUsers);
+router.get('/workers', authController.protect, getAllWorkers);
+router.get('/users', authController.protect, getAllUsers);
 
 router.route('/:id').get(GetUser).patch(UpdatedUser);
 

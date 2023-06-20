@@ -28,12 +28,21 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
     
       if(deleteFrom === req.user.id || deleteTo === req.user.id){
 
-        res.status(200).json({
-          status: true,
-          message:"Access successfully",
-          chatID: idString,
-          data: []
-        });
+        if (req.headers.lang === 'AR') {
+          res.status(200).json({
+            status: true,
+            message:" تم الوصول للمحادثة بنجاح",
+            chatID: idString,
+            data: []
+          });
+        } else {
+          res.status(200).json({
+            status: true,
+            message:"Access successfully",
+            chatID: idString,
+            data: []
+          })
+        } 
 
       }else{
         
@@ -48,13 +57,22 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
           if(!messages){
               return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
           }                
-    
-          res.status(200).json({
+          
+          if (req.headers.lang === 'AR') {
+            res.status(200).json({
+              status: true,
+              message:"تم ارسال جميع الرسائل بنجاح",
+              chatID: idString,
+              data: messages
+            })
+          } else {
+            res.status(200).json({
               status: true,
               message:"All Messages sent successfully",
               chatID: idString,
               data: messages
-          })
+            })
+          } 
     
         }else if(isChat[0].from.toString() === req.user.id && isChat[0].rechatDateTo !== null){
           
@@ -65,15 +83,24 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
                                                              
           if(!messages){
               return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
-          }                
-    
-          res.status(200).json({
+          }               
+          
+          if (req.headers.lang === 'AR') {
+            res.status(200).json({
+              status: true,
+              message:"تم ارسال جميع الرسائل بنجاح",
+              chatID: idString,
+              data: messages
+            })
+          } else {
+            res.status(200).json({
               status: true,
               message:"All Messages sent successfully",
               chatID: idString,
               data: messages
-          })
-    
+            })
+          } 
+
         }else if(isChat[0].to.toString() === req.user.id && isChat[0].rechatDateTo !== null){
          
           const messages = await Message.find({$and: [{ chat: isChat[0]._id},
@@ -83,14 +110,23 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
                                         .sort({ date: 1 })                              
           if(!messages){
           return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
-          }                
-    
-          res.status(200).json({
-          status: true,
-          message:"All Messages sent successfully",
-          chatID: idString,
-          data: messages
-          })
+          }      
+          
+          if (req.headers.lang === 'AR') {
+            res.status(200).json({
+              status: true,
+              message:"تم ارسال جميع الرسائل بنجاح",
+              chatID: idString,
+              data: messages
+            })
+          } else {
+            res.status(200).json({
+              status: true,
+              message:"All Messages sent successfully",
+              chatID: idString,
+              data: messages
+            })
+          } 
 
         }else if(isChat[0].to.toString() === req.user.id && isChat[0].rechatDateFrom !== null){
           
@@ -102,12 +138,21 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
               return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
           }                
     
-          res.status(200).json({
+          if (req.headers.lang === 'AR') {
+            res.status(200).json({
+              status: true,
+              message:"تم ارسال جميع الرسائل بنجاح",
+              chatID: idString,
+              data: messages
+            })
+          } else {
+            res.status(200).json({
               status: true,
               message:"All Messages sent successfully",
               chatID: idString,
               data: messages
-          })
+            })
+          } 
     
         }else{
 
@@ -120,12 +165,21 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
               return next(new AppError(`Sorry, can't found messages belongs to this chat `, 400))
           }                
     
-          res.status(200).json({
+          if (req.headers.lang === 'AR') {
+            res.status(200).json({
+              status: true,
+              message:"تم ارسال جميع الرسائل بنجاح",
+              chatID: idString,
+              data: messages
+            })
+          } else {
+            res.status(200).json({
               status: true,
               message:"All Messages sent successfully",
               chatID: idString,
               data: messages
-          })
+            })
+          } 
         }
       }
        
@@ -148,12 +202,21 @@ exports.accesOrCreateChat = catchAsync(async(req, res, next)=>{
         return next(new AppError('Sorry, Cannot create chat ', 404))
       }
 
-      res.status(200).json({
+      if (req.headers.lang === 'AR') {
+        res.status(200).json({
+          status: true,
+          message:"تم انشاء المحادثة بنجاح",
+          chatID:newChat.id,
+          data: [], 
+        });
+      } else {
+        res.status(200).json({
           status: true,
           message:"chat creatad successfully",
           chatID:newChat.id,
           data: [], 
-      }); 
+        });
+      } 
     }
 })
 
@@ -182,12 +245,21 @@ exports.allChats = catchAsync(async(req, res, next)=>{
     return next(new AppError("Not Found Chats",404))
   }                      
 
-  res.status(200).json({
+  if (req.headers.lang === 'AR') {
+    res.status(200).json({
+      status: true,
+      message:"تم ارسال جميع المحادثات بنجاح",
+      loginId:req.user.id,
+      data: chats
+    }); 
+  } else {
+    res.status(200).json({
       status: true,
       message:"All chat sent successfully",
       loginId:req.user.id,
       data: chats
-  }); 
+    }); 
+  }
 })
 
 exports.deleteChat = catchAsync(async(req, res, next)=>{
@@ -219,18 +291,23 @@ exports.deleteChat = catchAsync(async(req, res, next)=>{
     }
   }
 
-  res.status(200).json({
-    status:true,
-    message:"deleted successfully",
-  })
+  if (req.headers.lang === 'AR') {
+    res.status(200).json({
+      status:true,
+      message:"تم حذف المحادثة بنجاح",
+    })
+  } else {
+    res.status(200).json({
+      status:true,
+      message:"deleted successfully",
+    })
+  }
 
 })
 
 exports.deleteAllChats = catchAsync(async(req, res, next)=>{
 
   const chats = await Chat.find({ $or: [{ to: req.user.id }, {from: req.user.id }]})
-
-  console.log(chats)
 
   if(!chats){
     return next(new AppError('Sorry, No chat exist with this id ', 404))
@@ -252,11 +329,17 @@ exports.deleteAllChats = catchAsync(async(req, res, next)=>{
     }
   }
 
-  res.status(200).json({
-    status:true,
-    message:"deleted successfully",
-  })
-  
+  if (req.headers.lang === 'AR') {
+    res.status(200).json({
+      status:true,
+      message:"تم حذف جميع المحادثات بنجاح",
+    })
+  } else {
+    res.status(200).json({
+      status:true,
+      message:"deleted successfully",
+    })
+  }
 })
 
 exports.filterChat = catchAsync(async(req, res, next) =>{
@@ -288,10 +371,17 @@ exports.filterChat = catchAsync(async(req, res, next) =>{
     return next(new AppError("there's no posts to Get ", 404));
   }
 
-  res.status(200).json({
-    status: true,
-    message:'filter done',
-    data: filterChats,
-  });
-
+  if (req.headers.lang === 'AR') {
+    res.status(200).json({
+      status: true,
+      message:'تم الفلترة بنجاح',
+      data: filterChats,
+    });
+  } else {
+    res.status(200).json({
+      status: true,
+      message:'filter done',
+      data: filterChats,
+    });
+  }
 })

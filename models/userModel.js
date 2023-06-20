@@ -109,6 +109,7 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
+      default: ""
     },
     paidTime: {
       type: Date,

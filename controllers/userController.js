@@ -53,7 +53,7 @@ exports.getAllWorkers = catchAsync(async (req, res, next) => {
   }
 });
 
-TODO: exports.UpdatedUser = catchAsync(async (req, res, next) => {
+ exports.UpdatedUser = catchAsync(async (req, res, next) => {
   if (req?.files?.photo) {
     const file = req.files.photo;
 
@@ -110,7 +110,7 @@ exports.AddWorkerUserRate = catchAsync(async (req, res, next) => {
     req.body.id,
     {
       $push: { rating: rate },
-      $push:{rates:userLog.id}
+      
     },
     {
       new: true,

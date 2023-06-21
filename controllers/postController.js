@@ -344,7 +344,7 @@ exports.getProfilePage = catchAsync(async (req, res, next) => {
     'name email countryCode  city birthdate role photo rateAverage'
   );
   console.log("**********" + userData.role)
-  if (userData.role === 'user') {
+  if (userData.role === 'customer') {
     userData.birthdate = null;
   }
   const posts = await Post.find({ user: userData.id });

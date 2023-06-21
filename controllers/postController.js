@@ -341,9 +341,9 @@ exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
 exports.getProfilePage = catchAsync(async (req, res, next) => {
   // post id from client
   let userData = await User.findById(req.body.usId).select(
-    'name email countryCode  city birthdate role photo rateAverage'
+    'name email countryCode  city birthdate role photo rateAverage bio job'
   );
-  console.log("**********" + userData.role)
+
   if (userData.role === 'customer') {
     userData.birthdate = null;
   }

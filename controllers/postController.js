@@ -375,3 +375,35 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+function search( data , query) {
+  const regex = new RegExp(query, "i"); // create a regular expression to match the query case-insensitively
+  return data.filter((item) => {
+    for (let key in item) {
+      if (typeof item[key] === "string" && regex.test(item[key])) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+exports.searchMethode = catchAsync(async (req, res, next) => {
+  const loginUser = req.user
+  const searchData = req.body.search
+  var dataPosts = await Post.find({$and:[{ user: { $ne: loginUser._id }},{ role: { $ne: loginUser.role } }]})
+  var datausers = await User.find({ role: { $ne: loginUser.role } })
+
+  const posts = search(dataPosts,searchData);
+  const users = search(datausers,searchData);
+  
+  res.status(200).json({
+    status: true,
+    data: {
+      users,
+      posts,
+    },
+  });
+});
+
+

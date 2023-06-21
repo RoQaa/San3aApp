@@ -7,11 +7,14 @@ router.post('/addPost',authController.protect,postController.addPost);
 router.post('/deletePost',authController.protect,postController.deletePost);
 router.post('/UpdatePost',authController.protect,postController.updatePost);
 router.post('/reportPost',authController.protect,postController.ReportPost);
+router.post('/search',authController.protect,postController.searchMethode);
+
 
 router.get('/SavedPosts',authController.protect,postController.getSavedPosts);
 router.post('/SavePost',authController.protect,postController.AddSavedPost);
 router.post('/DeleteSavedPost',authController.protect,postController.DeleteSavedPost);
 router.post('/getPostById',postController.getPostById);
+
 
 router.get('/postTimeLine',authController.protect,postController.getPosts);
 router.post('/profilePage',postController.getProfilePage);

@@ -343,6 +343,7 @@ exports.getProfilePage = catchAsync(async (req, res, next) => {
   let userData = await User.findById(req.body.usId).select(
     'name email countryCode  city birthdate role photo rateAverage'
   );
+  console.log("**********" + userData.role)
   if (userData.role === 'user') {
     userData.birthdate = null;
   }
@@ -360,7 +361,7 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
   const userData = await User.findById(user.id).select(
-    'name email  phone countryCode isPaid city birthdate role photo rateAverage bio j'
+    'name email  phone countryCode isPaid city birthdate role photo rateAverage bio job'
   );
   if (userData.role === 'customer') {
     userData.birthdate = null;

@@ -399,6 +399,9 @@ exports.searchMethode = catchAsync(async (req, res, next) => {
   
   res.status(200).json({
     status: true,
+    message:"Result sent seccessfully",
+    lengthUsers:users.length,
+    lengthPosts:posts.length,
     data: {
       users,
       posts,

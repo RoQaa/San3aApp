@@ -219,7 +219,7 @@ exports.callback = catchAsync(async (req, res, next) => {
     res.send('غيرأمن');
   }
 });
-
+//fsddsf
 exports.initiateWallet = async (req, res) => {
   try {
     const token = await getToken();

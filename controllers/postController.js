@@ -253,12 +253,16 @@ exports.getSavedPosts = catchAsync(async (req, res, next) => {
           {
             $project: {
               name: 1,
-              //  photo:1
+              photo: 1,
+              role: 1,
             },
           },
         ],
         as: 'userData',
       },
+    },
+    {
+      $unwind: '$userData',
     },
     {
       $project: {
@@ -337,9 +341,10 @@ exports.DeleteSavedPost = catchAsync(async (req, res, next) => {
 exports.getProfilePage = catchAsync(async (req, res, next) => {
   // post id from client
   let userData = await User.findById(req.body.usId).select(
-    'name email countryCode  city birthdate role photo rateAverage'
+    'name email countryCode  city birthdate role photo rateAverage bio job'
   );
-  if (userData.role === 'user') {
+
+  if (userData.role === 'customer') {
     userData.birthdate = null;
   }
   const posts = await Post.find({ user: userData.id });
@@ -356,7 +361,7 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
   // protectHandler
   const user = req.user;
   const userData = await User.findById(user.id).select(
-    'name email  phone countryCode isPaid city birthdate role photo rateAverage'
+    'name email  phone countryCode isPaid city birthdate role photo rateAverage bio job'
   );
   if (userData.role === 'customer') {
     userData.birthdate = null;
@@ -370,3 +375,38 @@ exports.getMyProfilePage = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+function search( data , query) {
+  const regex = new RegExp(query, "i"); // create a regular expression to match the query case-insensitively
+  return data.filter((item) => {
+    for (let key in item) {
+      if (typeof item[key] === "string" && regex.test(item[key])) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+exports.searchMethode = catchAsync(async (req, res, next) => {
+  const loginUser = req.user
+  const searchData = req.body.search
+  var dataPosts = await Post.find({$and:[{ user: { $ne: loginUser._id }},{ role: { $ne: loginUser.role } }]})
+  var datausers = await User.find({ role: { $ne: loginUser.role } })
+
+  const posts = search(dataPosts,searchData);
+  const users = search(datausers,searchData);
+  
+  res.status(200).json({
+    status: true,
+    message:"Result sent seccessfully",
+    lengthUsers:users.length,
+    lengthPosts:posts.length,
+    data: {
+      users,
+      posts,
+    },
+  });
+});
+
+
